@@ -57,6 +57,10 @@ $(PROJECT_INCLUDE)/debug.h: include/debug.h $(PROJECT_INCLUDE)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/debug.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/debug.h
 
+$(PROJECT_INCLUDE)/uart.h: include/uart.h $(PROJECT_INCLUDE)/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/uart.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/uart.h
+
 $(PROJECT_INCLUDE)/tm27.h: ../../shared/include/tm27.h $(PROJECT_INCLUDE)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/tm27.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/tm27.h

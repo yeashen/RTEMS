@@ -16,7 +16,6 @@
 
 ******************************************************************************/
 
-#include <platform.h>
 #include <vicap_drv.h>
 
 void vicap_set_y_faddr(unsigned int addr)
@@ -139,17 +138,6 @@ unsigned int vicap_get_pt_width()
 	val = VICAP_RD_REG(VICAP_PT_SIZE);
 	
 	return (val&0xFFFF);
-}
-
-
-void vicap_clear_ch_int(unsigned int int_mask)
-{
-	VICAP_WR_REG(VICAP_CH_INT_STA, int_mask);
-}
-
-void vicap_clear_src_int()
-{
-	INT_WR_REG(REG_INTC_SOFTINTCLEAR, CFG_VICAP_IRQEN);
 }
 
 void vicap_pin_init()
