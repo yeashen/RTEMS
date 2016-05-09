@@ -65,6 +65,7 @@
 #define DDR_PHY_BASE			0x20120000
 #define DDRC_REG_BASE			0x20110000
 
+#define UART0_REG_BASE			0x20080000
 #define RTC_REG_BASE			0x20060000
 #define REG_BASE_SCTL			0x20050000
 #define REG_SC_CTRL			0
@@ -202,10 +203,6 @@
 #define SPACE_RATIO_CC			0x218
 
 /******************UART  PL011************************************/
-#define UART0_REG_BASE			0x20080000
-#define UART1_REG_BASE			0x20090000
-#define UART2_REG_BASE			0x200A0000
-
 #define UART_PL01x_DR                   0x00	 /*  Data read or written from the interface. */
 #define UART_PL01x_RSR                  0x04	 /*  Receive status register (Read). */
 #define UART_PL01x_ECR                  0x04	 /*  Error clear register (Write). */
@@ -268,8 +265,8 @@
 #define UART_PL011_IMSC_DCDMIM          (1 << 2)
 #define UART_PL011_IMSC_CTSMIM          (1 << 1)
 #define UART_PL011_IMSC_RIMIM           (1 << 0)
-#define UART_RD_REG(base, offset)				(HI_REG_RD(base+offset))
-#define UART_WR_REG(base, offset, val)		(HI_REG_WR(base+offset, val))
+#define UART_RD_REG(offset)				(HI_REG_RD(UART0_REG_BASE+offset))
+#define UART_WR_REG(offset, val)		(HI_REG_WR(UART0_REG_BASE+offset, val))
 
 /*************************I2C****************************************/
 #define I2C_REG_BASE		0x200D0000
