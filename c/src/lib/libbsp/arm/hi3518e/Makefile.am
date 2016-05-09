@@ -33,6 +33,7 @@ include_HEADERS += include/i2c.h
 include_HEADERS += include/vicap_drv.h
 include_HEADERS += include/gpio_drv.h
 include_HEADERS += include/debug.h
+include_HEADERS += include/uart.h
 include_HEADERS += ../../shared/include/tm27.h
 
 nodist_include_HEADERS = ../../shared/include/coverhd.h 
@@ -86,6 +87,7 @@ libbsp_a_SOURCES += ../../shared/console_control.c
 libbsp_a_SOURCES += ../../shared/console_read.c
 libbsp_a_SOURCES += ../../shared/console_select.c
 libbsp_a_SOURCES += ../../shared/console_write.c
+libbsp_a_SOURCES += console/console-config.c
 libbsp_a_SOURCES += console/uart.c
 
 # I2C
