@@ -24,39 +24,38 @@
 #include <libchip/sersupp.h>
 
 #include <platform.h>
-
-/* How many serial ports? */
-#define NUM_DEVS       1
-
-int     uart_poll_read(int minor);
-
-int dbg_dly;
+#include <uart.h>
 
 /* static function prototypes */
-static int     uart_first_open(int major, int minor, void *arg);
-static int     uart_last_close(int major, int minor, void *arg);
-static int     uart_read(int minor);
-static ssize_t uart_write(int minor, const char *buf, size_t len);
-static void    uart_init(int minor);
-static void    uart_write_polled(int minor, char c);
-static int     uart_set_attributes(int minor, const struct termios *t);
+static int     hi_uart_first_open(int major, int minor, void *arg);
+static int     hi_uart_last_close(int major, int minor, void *arg);
+static int     hi_uart_read(int minor);
+static ssize_t hi_uart_write(int minor, const char *buf, size_t len);
+static void    hi_uart_initialize(int minor);
+static void    hi_uart_write_polled(int minor, char c);
+int  hi_uart_read_polled(int minor);
+static int     hi_uart_set_attributes(int minor, const struct termios *t);
 
-/* These are used by code in console.c */
-unsigned long Console_Configuration_Count = NUM_DEVS;
+static unsigned int hi_uart_get_baseaddr(int minor)
+{
+  const console_tbl *ct = &Console_Configuration_Ports[minor];
+
+  return ct->ulCtrlPort1;
+}
 
 /* Pointers to functions for handling the UART. */
-const console_fns uart_fns =
-{
-    libchip_serial_default_probe,
-    uart_first_open,
-    uart_last_close,
-    uart_read,
-    uart_write,
-    uart_init,
-    uart_write_polled,   /* not used in this driver */
-    uart_set_attributes,
-    FALSE      /* TRUE if interrupt driven, FALSE if not. */
+const console_fns hi_uart_fns = {
+  .deviceProbe = libchip_serial_default_probe,
+  .deviceFirstOpen = hi_uart_first_open,
+  .deviceLastClose = hi_uart_last_close,
+  .deviceRead = hi_uart_read,
+  .deviceWrite = hi_uart_write,
+  .deviceInitialize = hi_uart_initialize,
+  .deviceWritePolled = hi_uart_write_polled,
+  .deviceSetAttributes = hi_uart_set_attributes,
+  .deviceOutputUsesInterrupts = false
 };
+
 
 /*
  * There's one item in array for each UART.
@@ -66,26 +65,48 @@ const console_fns uart_fns =
  *
  */
 console_tbl Console_Configuration_Ports[] = {
-    {
-        "/dev/com0",                      /* sDeviceName */
-        SERIAL_CUSTOM,                    /* deviceType */
-        &uart_fns,                        /* pDeviceFns */
-        NULL,                             /* deviceProbe */
-        NULL,                             /* pDeviceFlow */
-        0,                                /* ulMargin - NOT USED */
-        0,                                /* ulHysteresis - NOT USED */
-        NULL,          					/* pDeviceParams */
-        UART0_REG_BASE,      /* ulCtrlPort1  - NOT USED */
-        0,                                /* ulCtrlPort2  - NOT USED */
-        0,                                /* ulDataPort  - NOT USED */
-        NULL,                             /* getRegister - NOT USED */
-        NULL,                             /* setRegister - NOT USED */
-        NULL,                             /* getData - NOT USED */
-        NULL,                             /* setData - NOT USED */
-        0,                                /* ulClock - NOT USED */
-        0                                 /* ulIntVector - NOT USED */
-    }
+	{
+		.sDeviceName = "/dev/com0",
+		.deviceType = SERIAL_CUSTOM,
+		.pDeviceFns = &hi_uart_fns,
+		.deviceProbe = NULL,
+		.pDeviceFlow = NULL,
+		.ulMargin = 0,
+		.ulHysteresis = 0,
+		.pDeviceParams = (void *) 115200,
+		.ulCtrlPort1 = UART0_REG_BASE,
+		.ulCtrlPort2 = 0,
+		.ulDataPort = 0,
+		.getRegister = NULL,
+		.setRegister = NULL,
+		.getData = NULL,
+		.setData = NULL,
+		.ulClock = 0,
+		.ulIntVector = 0
+	},
+	{
+		.sDeviceName = "/dev/com1",
+		.deviceType = SERIAL_CUSTOM,
+		.pDeviceFns = &hi_uart_fns,
+		.deviceProbe = NULL,
+		.pDeviceFlow = NULL,
+		.ulMargin = 0,
+		.ulHysteresis = 0,
+		.pDeviceParams = (void *) 115200,
+		.ulCtrlPort1 = UART1_REG_BASE,
+		.ulCtrlPort2 = 0,
+		.ulDataPort = 0,
+		.getRegister = NULL,
+		.setRegister = NULL,
+		.getData = NULL,
+		.setData = NULL,
+		.ulClock = 0,
+		.ulIntVector = 0
+	}
 };
+
+/* These are used by code in console.c */
+unsigned long Console_Configuration_Count = RTEMS_ARRAY_SIZE(Console_Configuration_Ports);
 
 /*********************************************************************/
 /* Functions called via termios callbacks (i.e. the ones in uart_fns */
@@ -98,7 +119,7 @@ console_tbl Console_Configuration_Ports[] = {
  *
  * Since micromonitor already set up the UART, we do nothing.
  */
-static int uart_first_open(int major, int minor, void *arg)
+static int hi_uart_first_open(int major, int minor, void *arg)
 {
     return 0;
 }
@@ -109,7 +130,7 @@ static int uart_first_open(int major, int minor, void *arg)
  * is interrupt driven, you should disable interrupts here. Otherwise,
  * it's probably safe to do nothing.
  */
-static int uart_last_close(int major, int minor, void *arg)
+static int hi_uart_last_close(int major, int minor, void *arg)
 {
     return 0;
 }
@@ -121,60 +142,59 @@ static int uart_last_close(int major, int minor, void *arg)
  * Return -1 if there's no data, otherwise return
  * the character in lowest 8 bits of returned int.
  */
-static int uart_read(int minor)
+static int hi_uart_read(int minor)
 {
 	unsigned int data;
+	unsigned int baseaddr = hi_uart_get_baseaddr(minor);
 
-	if (minor == 0) {
-		/* Wait until there is data in the FIFO */
-		while(UART_RD_REG(UART_PL01x_FR) & UART_PL01x_FR_RXFE);
-		data = UART_RD_REG(UART_PL01x_DR);
+	/* Wait until there is data in the FIFO */
+	while(UART_RD_REG(baseaddr, UART_PL01x_FR) & UART_PL01x_FR_RXFE);
+	data = UART_RD_REG(baseaddr, UART_PL01x_DR);
 
-		/* Check for an error flag */
-		if (data & 0xFFFFFF00) {
-			/* Clear the error */
-			UART_WR_REG(UART_PL01x_ECR, 0xFFFFFFFF);
-			return -1;
-		}
-
-		return (int) data;
-	} else {
-		printk("Unknown console minor number: %d\n", minor);
+	/* Check for an error flag */
+	if (data & 0xFFFFFF00) {
+		/* Clear the error */
+		UART_WR_REG(baseaddr, UART_PL01x_ECR, 0xFFFFFFFF);
 		return -1;
 	}
+
+	return (int) data;
 }
-
-
 
 /*
  * Write buffer to UART
  *
  * return 1 on success, -1 on error
  */
-static ssize_t uart_write(int minor, const char *buf, size_t len)
+static ssize_t hi_uart_write(int minor, const char *buf, size_t len)
 {
-	/* Wait until there is space in the FIFO */
-	while (UART_RD_REG(UART_PL01x_FR) & UART_PL01x_FR_TXFF);
+	int i;
+	unsigned int baseaddr = hi_uart_get_baseaddr(minor);
 
-	/* Send the character */
-	UART_WR_REG (UART_PL01x_DR, buf[0]);
+	 for (i = 0; i < len; i++){
+		/* Wait until there is space in the FIFO */
+		while (UART_RD_REG(baseaddr, UART_PL01x_FR) & UART_PL01x_FR_TXFF);
+		/* Send the character */
+		UART_WR_REG(baseaddr, UART_PL01x_DR, buf[0]);
+	 }
 
     return 1;
 }
 
 
 /* Set up the UART. */
-static void uart_init(int minor)
+static void hi_uart_initialize(int minor)
 {
 	unsigned int temp;
 	unsigned int divider;
 	unsigned int remainder;
 	unsigned int fraction;
+	unsigned int baseaddr = hi_uart_get_baseaddr(minor);
 
 	/*
 	 ** First, disable everything.
 	 */
-	 UART_WR_REG(UART_PL011_CR, 0x0);
+	 UART_WR_REG(baseaddr, UART_PL011_CR, 0x0);
 	/*
 	 ** Set baud rate
 	 **
@@ -187,29 +207,29 @@ static void uart_init(int minor)
 	temp = (8 * remainder) / UART_BAUDRATE;
 	fraction = (temp >> 1) + (temp & 1);
 
-	UART_WR_REG(UART_PL011_IBRD, divider);
-	UART_WR_REG(UART_PL011_FBRD, fraction);
+	UART_WR_REG(baseaddr, UART_PL011_IBRD, divider);
+	UART_WR_REG(baseaddr, UART_PL011_FBRD, fraction);
 
 	/*
 	 ** Set the UART to be 8 bits, 1 stop bit, no parity, fifo enabled.
 	 */
-	UART_WR_REG(UART_PL011_LCRH, (UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN));
+	UART_WR_REG(baseaddr, UART_PL011_LCRH, (UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN));
 
 	/*
 	 ** Finally, enable the UART
 	 */
-	UART_WR_REG(UART_PL011_CR, (UART_PL011_CR_UARTEN | 
+	UART_WR_REG(baseaddr, UART_PL011_CR, (UART_PL011_CR_UARTEN | 
 			UART_PL011_CR_TXE | UART_PL011_CR_RXE)); 
 }
 
 /* I'm not sure this is needed for the shared console driver. */
-static void    uart_write_polled(int minor, char c)
+static void    hi_uart_write_polled(int minor, char c)
 {
-    uart_write(minor, &c, 1);
+    hi_uart_write(minor, &c, 1);
 }
 
 /* This is for setting baud rate, bits, etc. */
-static int     uart_set_attributes(int minor, const struct termios *t)
+static int     hi_uart_set_attributes(int minor, const struct termios *t)
 {
     return 0;
 }
@@ -224,9 +244,9 @@ static int     uart_set_attributes(int minor, const struct termios *t)
  * Read from UART. This is used in the exit code, and can't
  * rely on interrupts.
 */
-int uart_poll_read(int minor)
+int hi_uart_read_polled(int minor)
 {
-    return uart_read(minor);
+    return hi_uart_read(minor);
 }
 
 
@@ -236,9 +256,9 @@ int uart_poll_read(int minor)
  * RTEMS system calls. It needs to be very simple
  */
 static void _BSP_put_char( char c ) {
-    uart_write_polled(0, c);
+    hi_uart_write_polled(0, c);
     if (c == '\n') {
-        uart_write_polled(0, '\r');
+        hi_uart_write_polled(0, '\r');
     }
 }
 
@@ -246,7 +266,7 @@ BSP_output_char_function_type BSP_output_char = _BSP_put_char;
 
 static int _BSP_get_char(void)
 {
-  return uart_poll_read(0);
+  return hi_uart_read_polled(0);
 }
 
 BSP_polling_getchar_function_type BSP_poll_char = _BSP_get_char;

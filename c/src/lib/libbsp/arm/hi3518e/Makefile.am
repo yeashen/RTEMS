@@ -33,6 +33,7 @@ include_HEADERS += include/i2c.h
 include_HEADERS += include/vicap_drv.h
 include_HEADERS += include/gpio_drv.h
 include_HEADERS += include/debug.h
+include_HEADERS += include/uart.h
 include_HEADERS += ../../shared/include/tm27.h
 
 nodist_include_HEADERS = ../../shared/include/coverhd.h 
