@@ -41,7 +41,7 @@ rtems_irq_connect_data clock_isr_data = {
  */
 #define Clock_driver_support_at_tick()                \
 	do {																							\
-		INT_WR_REG(REG_INTC_SOFTINTCLEAR, 1<<BSP_INT_TIMER0_1);	\
+		/*INT_WR_REG(REG_INTC_SOFTINTCLEAR, 1<<BSP_INT_TIMER0_1);	*/\
 		TIMER0_WR_REG(REG_TIMER0_INTCLR, 0);\
 	} while(0)
 
@@ -67,6 +67,7 @@ rtems_irq_connect_data clock_isr_data = {
  * clock_isr_off(), and clock_isr_is_on() functions can be
  * NOPs.
  */
+
 #define Clock_driver_support_initialize_hardware() \
 	do { \
 		/* set clock source busclk */ \
@@ -75,8 +76,6 @@ rtems_irq_connect_data clock_isr_data = {
 		TIMER0_WR_REG(REG_TIMER_CONTROL, 0);\
 		TIMER0_WR_REG(REG_TIMER_RELOAD, BUSCLK_TO_TIMER_RELOAD(CFG_CLK_BUS));\
 		TIMER0_WR_REG(REG_TIMER_CONTROL, CFG_TIMER_CONTROL);\
-		INT_WR_REG(REG_INTC_INTENABLE, \
-			INT_RD_REG(REG_INTC_INTENABLE)|CFG_TIMER_IRQEN);\
 		} while (0)
 
 /**

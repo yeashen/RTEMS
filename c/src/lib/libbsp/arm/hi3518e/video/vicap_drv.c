@@ -118,6 +118,11 @@ void vicap_reg_newer()
 	VICAP_WR_REG(VICAP_CH_REG_NEW, 0x1);	
 }
 
+unsigned int vicap_get_ch_int_en()
+{
+	return VICAP_RD_REG(VICAP_CH_INT_MASK);
+}
+
 unsigned int vicap_get_ch_int_status()
 {
 	return VICAP_RD_REG(VICAP_CH_INT_STA);
@@ -196,22 +201,18 @@ void vicap_reg_init(void)
 	VICAP_WR_REG(VICAP_CH_CROP_CFG, 0x1); 
 	/* relation reg config end */
 
-	INT_WR_REG(REG_INTC_INTENABLE, INT_RD_REG(REG_INTC_INTENABLE)|CFG_VICAP_IRQEN);
-
 	/* config AXI_CFG */
 	VICAP_WR_REG(VICAP_AXI_CFG, 0x3);
 
 	/* port config */
 	VICAP_WR_REG(VICAP_PT_SEL, 0x0);	//external input
 
-	VICAP_WR_REG(VICAP_PT_INT_MASK, 0x0);	//enable fstart
-
 	/* channel config */
 	VICAP_WR_REG(VICAP_CH_SEL, 0x0);	//isp bypass
-	VICAP_WR_REG(VICAP_CH_INT_MASK, FSTART_EN|CC_INT_EN|BUF_OVF_EN|FIELD_THROW_EN);
+	VICAP_WR_REG(VICAP_CH_INT_MASK, FSTART_EN|CC_INT_EN);
 
 	/* vicap global interrupt config */
-	VICAP_WR_REG(VICAP_INT_MASK, CH0_INT_EN|PT0_INT_EN);
+	VICAP_WR_REG(VICAP_INT_MASK, CH0_INT_EN);
 
 	/* interface config */
 	VICAP_WR_REG(VICAP_PT_INTF_MOD, PT_EN);

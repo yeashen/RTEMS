@@ -102,6 +102,25 @@ console_tbl Console_Configuration_Ports[] = {
 		.setData = NULL,
 		.ulClock = 0,
 		.ulIntVector = 0
+	},
+	{
+		.sDeviceName = "/dev/com2",
+		.deviceType = SERIAL_CUSTOM,
+		.pDeviceFns = &hi_uart_fns,
+		.deviceProbe = NULL,
+		.pDeviceFlow = NULL,
+		.ulMargin = 0,
+		.ulHysteresis = 0,
+		.pDeviceParams = (void *) 115200,
+		.ulCtrlPort1 = UART2_REG_BASE,
+		.ulCtrlPort2 = 0,
+		.ulDataPort = 0,
+		.getRegister = NULL,
+		.setRegister = NULL,
+		.getData = NULL,
+		.setData = NULL,
+		.ulClock = 0,
+		.ulIntVector = 0
 	}
 };
 
@@ -175,7 +194,7 @@ static ssize_t hi_uart_write(int minor, const char *buf, size_t len)
 		/* Wait until there is space in the FIFO */
 		while (UART_RD_REG(baseaddr, UART_PL01x_FR) & UART_PL01x_FR_TXFF);
 		/* Send the character */
-		UART_WR_REG(baseaddr, UART_PL01x_DR, buf[0]);
+		UART_WR_REG(baseaddr, UART_PL01x_DR, buf[i]);
 	 }
 
     return 1;

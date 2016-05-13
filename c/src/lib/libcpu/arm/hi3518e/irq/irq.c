@@ -24,34 +24,20 @@
 
 void bsp_interrupt_dispatch(void)
 {
-	uint32_t regval = INT_RD_REG(REG_INTC_IRQSTATUS);
+	volatile uint32_t regval = INT_RD_REG(REG_INTC_IRQSTATUS);
 	rtems_vector_number vector = BSP_MAX_INT;
 
 	switch(regval){
 		case (1<<BSP_INT_TIMER0_1) : 
 			vector = BSP_INT_TIMER0_1; 
 			break;
-		case (1<<BSP_INT_TIMER2_3) : 
-			vector = BSP_INT_TIMER2_3; 
-			break;
 		case (1<<BSP_INT_VICAP) : 
 			vector = BSP_INT_VICAP; 
 			break;
-		case (1<<BSP_INT_GPIO_0_1_2_11):
-			vector = BSP_INT_GPIO_0_1_2_11;
-			break;
-		case (1<<BSP_INT_GPIO_3_4_5_10):
-			vector = BSP_INT_GPIO_3_4_5_10;
-			break;
-		case (1<<BSP_INT_GPIO_6_7_8_9):
-			vector = BSP_INT_GPIO_6_7_8_9;
-			break;
-		case (1<<BSP_INT_IIC):
-			vector = BSP_INT_IIC;
-			break;
 		default : 
 			printk("vector=0x%x\n", regval);
-			vector = BSP_MAX_INT; 
+			//vector = BSP_MAX_INT; 
+			vector = BSP_INT_TIMER0_1;
 			break;		
 	}
 
@@ -60,11 +46,13 @@ void bsp_interrupt_dispatch(void)
 
 rtems_status_code bsp_interrupt_vector_enable(rtems_vector_number vector)
 {
+	INT_WR_REG(REG_INTC_INTENABLE, INT_RD_REG(REG_INTC_INTENABLE)|(1<<vector));
 	return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code bsp_interrupt_vector_disable(rtems_vector_number vector)
 {
+	INT_WR_REG(REG_INTC_INTENABLE, INT_RD_REG(REG_INTC_INTENABLE)&(~(1<<vector)));
 	return RTEMS_SUCCESSFUL;
 }
 

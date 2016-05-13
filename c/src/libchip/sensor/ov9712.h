@@ -19,6 +19,7 @@ typedef struct
 typedef enum
 {
 	MODE_640x400 = 0,
+	MODE_640x400_COLORBAR,
 	MODE_1280x720,
 }SENSOR_RES_E;
 

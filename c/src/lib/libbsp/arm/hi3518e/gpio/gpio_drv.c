@@ -138,9 +138,6 @@ void hi_gpio_int_config(GPIO_INT_PATA *para)
 
 	tmp = GPIO_RD_REG(GPIO_IE);
 	GPIO_WR_REG(GPIO_IE, tmp|(1<<pin));
-
-	/* enable gpio int source */
-	INT_WR_REG(REG_INTC_INTENABLE, INT_RD_REG(REG_INTC_INTENABLE)|(1<<pin));
 }
 
 unsigned int hi_gpio_int_query()

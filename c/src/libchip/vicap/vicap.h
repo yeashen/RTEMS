@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+#define CH_REG_NEW	(1<<4)
 #define CH_FIELD_THROW  (1<<3)
 #define CH_BUF_OVF		(1<<2)
 #define CH_CC_INT		(1<<1)

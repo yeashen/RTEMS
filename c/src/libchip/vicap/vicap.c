@@ -23,31 +23,31 @@
 
 rtems_id viap_sem_id;
 
+int fstart = 0;
+int fcc = 0;
+
 rtems_isr video_capture_isr(rtems_vector_number vector)
 {
-	uint32_t int_sta;
+	volatile uint32_t int_sta;
 
 	int_sta = vicap_get_ch_int_status();
 
 	if(int_sta&CH_FSTART){
 		/* modify buffer addr to next */
 		//printk("detect one frame start\n");
+		fstart++;
 		vicap_clear_ch_int(CH_FSTART);
 	}else if(int_sta&CH_CC_INT){
 		printk("one frame capture finish\n");
+		fcc++;
+		if(fcc%500 == 0)
+			printk("detect %d frame, cc=%d\n", fstart, fcc);
 		//rtems_semaphore_release(viap_sem_id);
 		/* capture one frame to mem addr */
 		vicap_clear_ch_int(CH_CC_INT);
-	}else if(int_sta&CH_FIELD_THROW){
-		printk("[warnning] vicap throw a frame data!\n");
-		vicap_clear_ch_int(CH_FIELD_THROW);
-	}else if(int_sta&CH_BUF_OVF){
-		printk("[warnning] vicap FIFO overflow!\n");
-		vicap_clear_ch_int(CH_BUF_OVF);
 	}
-
 	vicap_clear_src_int();
-	vicap_reg_newer();
+	//vicap_reg_newer();
 }
 
 int video_capture_open()
