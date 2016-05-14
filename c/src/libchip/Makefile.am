@@ -99,10 +99,12 @@ libi2cio_a_SOURCES = i2c/i2c-ds1621.h \
 	i2c/spi-sd-card.c
 
 # sensor
-include_libchip_HEADERS += sensor/ov9712.h
+include_libchip_HEADERS += sensor/ov9712.h \
+	sensor/poa030r.h
 noinst_LIBRARIES += libsensorio.a
 libsensorio_a_CPPFLAGS = $(AM_CPPFLAGS)
-libsensorio_a_SOURCES = sensor/ov9712.c
+libsensorio_a_SOURCES = sensor/ov9712.c \
+	sensor/poa030r.c
 
 # vicap
 include_libchip_HEADERS += vicap/vicap.h

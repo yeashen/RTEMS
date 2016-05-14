@@ -154,6 +154,10 @@ $(PROJECT_INCLUDE)/libchip/ov9712.h: sensor/ov9712.h $(PROJECT_INCLUDE)/libchip/
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libchip/ov9712.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/libchip/ov9712.h
 
+$(PROJECT_INCLUDE)/libchip/poa030r.h: sensor/poa030r.h $(PROJECT_INCLUDE)/libchip/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libchip/poa030r.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/libchip/poa030r.h
+
 $(PROJECT_INCLUDE)/libchip/vicap.h: vicap/vicap.h $(PROJECT_INCLUDE)/libchip/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libchip/vicap.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/libchip/vicap.h

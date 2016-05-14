@@ -21,8 +21,6 @@
 #include <vicap_drv.h>
 #include <bsp/irq.h>
 
-rtems_id viap_sem_id;
-
 int fstart = 0;
 int fcc = 0;
 
@@ -42,7 +40,6 @@ rtems_isr video_capture_isr(rtems_vector_number vector)
 		fcc++;
 		if(fcc%500 == 0)
 			printk("detect %d frame, cc=%d\n", fstart, fcc);
-		//rtems_semaphore_release(viap_sem_id);
 		/* capture one frame to mem addr */
 		vicap_clear_ch_int(CH_CC_INT);
 	}
@@ -65,21 +62,6 @@ int video_capture_open()
 		printk("vicap install interrupt handler failed!\n");
 		return -1;
 	}
-
-	rtems_name sem_vicap = rtems_build_name( 'V', 'i', 'S',' ' );
-	status = rtems_semaphore_create(
-    				sem_vicap,
-    				1,
-    				RTEMS_DEFAULT_ATTRIBUTES,
-    				RTEMS_NO_PRIORITY,
-    				&viap_sem_id
-    				);
-	if(status != RTEMS_SUCCESSFUL){
-		printk("rtems_semaphore_create failed\n");
-		return -1;
-	}
-
-	rtems_semaphore_release(viap_sem_id);
 
 	return 0;
 }
@@ -116,11 +98,7 @@ int video_capture_ioctl(VICAP_CTRL_CMD cmd)
 			vicap_reg_newer();
 			break;
 		case VICAP_GET_DATA_STA:
-			status = rtems_semaphore_obtain(
-					viap_sem_id,
-					RTEMS_WAIT,
-					RTEMS_NO_TIMEOUT
-			);
+			// TODO: event
 			if(status != RTEMS_SUCCESSFUL){
 				return -1;
 			}else{
@@ -144,7 +122,5 @@ void video_capture_close()
 				BSP_INT_VICAP,
 				video_capture_isr,
 				NULL);
-	
-	rtems_semaphore_delete(viap_sem_id);
 }
 
