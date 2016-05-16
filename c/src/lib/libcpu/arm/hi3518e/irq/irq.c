@@ -20,7 +20,7 @@
 #include <bsp/irq-generic.h>
 #include <rtems/score/armv4.h>
 
-#include <platform.h>
+#include <hi3518e.h>
 
 void bsp_interrupt_dispatch(void)
 {

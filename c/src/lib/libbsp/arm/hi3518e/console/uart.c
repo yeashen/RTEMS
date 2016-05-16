@@ -23,7 +23,7 @@
 #include <libchip/serial.h>
 #include <libchip/sersupp.h>
 
-#include <platform.h>
+#include <hi3518e.h>
 #include <uart.h>
 
 /* static function prototypes */

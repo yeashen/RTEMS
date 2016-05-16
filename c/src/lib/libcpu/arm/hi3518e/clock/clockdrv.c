@@ -18,7 +18,7 @@
 #include <rtems.h>
 #include <bsp/irq.h>
 #include <bsp.h>
-#include <platform.h>
+#include <hi3518e.h>
 
 void Clock_isr(rtems_irq_hdl_param arg);
 static void clock_isr_on(const rtems_irq_connect_data *unused);

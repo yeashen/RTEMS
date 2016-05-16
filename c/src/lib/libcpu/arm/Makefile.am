@@ -122,6 +122,8 @@ lpc22xx_irq_rel_LDFLAGS = $(RTEMS_RELLDFLAGS)
 endif
 
 if hi3518e
+include_HEADERS = hi3518e/include/hi3518e.h
+
 ## hi3518e/clock
 noinst_PROGRAMS += hi3518e/clock.rel
 hi3518e_clock_rel_SOURCES = hi3518e/clock/clockdrv.c

@@ -104,9 +104,9 @@ PREINSTALL_FILES += $(PROJECT_INCLUDE)/bsp/irq.h
 endif
 
 if hi3518e
-$(PROJECT_INCLUDE)/platform.h: hi3518e/include/platform.h $(PROJECT_INCLUDE)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/platform.h
-PREINSTALL_FILES += $(PROJECT_INCLUDE)/platform.h
+$(PROJECT_INCLUDE)/hi3518e.h: hi3518e/include/hi3518e.h $(PROJECT_INCLUDE)/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/hi3518e.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/hi3518e.h
 
 $(PROJECT_INCLUDE)/bsp/irq.h: hi3518e/irq/irq.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/irq.h

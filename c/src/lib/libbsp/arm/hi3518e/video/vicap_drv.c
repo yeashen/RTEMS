@@ -16,7 +16,7 @@
 
 ******************************************************************************/
 
-#include <platform.h>
+#include <hi3518e.h>
 #include <vicap_drv.h>
 
 void vicap_set_y_faddr(unsigned int addr)

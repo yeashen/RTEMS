@@ -16,7 +16,7 @@
 
 ******************************************************************************/
 
-#include <platform.h>
+#include <hi3518e.h>
 #include <gpio_drv.h>
 
 void hi_gpio_set_derection(GPIO_PIN_NUM pin, GPIO_DIRECTION dir)

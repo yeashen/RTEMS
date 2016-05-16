@@ -1,6 +1,8 @@
 #ifndef	__HI_CHIP_REGS_H__
 #define	__HI_CHIP_REGS_H__
 
+#include <rtems.h>
+
 #define HI_REG_WR(a, v)		(*(volatile unsigned int *)(a) = (v))
 #define HI_REG_RD(a)		(*(volatile unsigned int *)(a))
 

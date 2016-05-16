@@ -18,7 +18,7 @@
 #include <bsp.h>
 #include <rtems.h>
 #include <rtems/btimer.h>
-#include <platform.h>
+#include <hi3518e.h>
 
 bool benchmark_timer_find_average_overhead;
 

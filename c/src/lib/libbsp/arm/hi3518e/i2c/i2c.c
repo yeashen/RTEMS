@@ -18,7 +18,7 @@
 
 #include <dev/i2c/i2c.h>
 #include <i2c.h>
-#include <platform.h>
+#include <hi3518e.h>
 #include <unistd.h>
 
 uint8_t i2c_init_flag = 0;

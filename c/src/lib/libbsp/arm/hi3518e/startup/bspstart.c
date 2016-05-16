@@ -17,7 +17,7 @@
 ******************************************************************************/
 #include <bsp.h>
 #include <bsp/irq-generic.h>
-#include <platform.h>
+#include <hi3518e.h>
 
 /*
  *  Show system relation information

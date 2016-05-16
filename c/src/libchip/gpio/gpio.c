@@ -18,7 +18,7 @@
 #include <rtems.h>
 #include <libchip/gpio.h>
 #include <bsp/irq.h>
-#include <platform.h>
+#include <hi3518e.h>
 
 static rtems_isr gpio_isr(rtems_vector_number vector)
 {
