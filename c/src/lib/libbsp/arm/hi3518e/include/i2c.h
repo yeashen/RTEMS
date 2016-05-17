@@ -58,8 +58,17 @@
 #define I2C_ARBITRATE_INTR (1 << 1)
 #define I2C_OVER_INTR (1 << 0)
 
-void hi_i2c_init(void);
-int hi_i2c_write(uint8_t dev_addr, uint32_t reg_addr, uint32_t reg_byte, uint32_t data, uint32_t data_byte);
-int hi_i2c_read(uint8_t dev_addr, uint32_t reg_addr, uint32_t reg_byte, uint32_t *data, uint32_t data_byte);
+typedef struct
+{
+	uint8_t dev_addr;
+	uint32_t reg_addr;
+	uint32_t reg_byte;
+	uint32_t data;
+	uint32_t data_byte;
+}i2c_para_s;
+
+void hi_i2c_init(int minor);
+int hi_i2c_write(int minor, i2c_para_s *i2c_para);
+int hi_i2c_read(int minor, i2c_para_s *i2c_para);
 
 #endif /* _I2C_H */

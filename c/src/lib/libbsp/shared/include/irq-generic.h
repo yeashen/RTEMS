@@ -240,8 +240,6 @@ rtems_status_code bsp_interrupt_vector_enable(rtems_vector_number vector);
  */
 rtems_status_code bsp_interrupt_vector_disable(rtems_vector_number vector);
 
-rtems_status_code bsp_interrupt_vector_clear(rtems_vector_number vector);
-
 
 /**
  * @brief Sequencially calls all interrupt handlers for the vector number @a

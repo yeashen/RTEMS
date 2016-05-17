@@ -38,12 +38,11 @@ rtems_isr video_capture_isr(rtems_vector_number vector)
 	}else if(int_sta&CH_CC_INT){
 		printk("one frame capture finish\n");
 		fcc++;
-		if(fcc%500 == 0)
+		if(fcc%300 == 0)
 			printk("detect %d frame, cc=%d\n", fstart, fcc);
 		/* capture one frame to mem addr */
 		vicap_clear_ch_int(CH_CC_INT);
 	}
-	vicap_clear_src_int();
 	//vicap_reg_newer();
 }
 

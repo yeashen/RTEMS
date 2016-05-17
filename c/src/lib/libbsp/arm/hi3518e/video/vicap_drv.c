@@ -19,120 +19,124 @@
 #include <hi3518e.h>
 #include <vicap_drv.h>
 
+static hi_vi_regs_s *vi_reg = NULL;
+static hi_pinmux_regs_s *pinmux_reg = NULL;
+static hi_irq_regs_s *irq_reg = NULL;
+
 void vicap_set_y_faddr(unsigned int addr)
 {
-	VICAP_WR_REG(VICAP_CH_DES_Y_FADDR, addr);
+	vi_reg->des_y_addr = addr;
 }
 
 void vicap_set_y_width(unsigned int width)
 {
 	unsigned int val = 0;
-
-	val = VICAP_RD_REG(VICAP_CH_DES_Y_SIZE);
+	
+	val = vi_reg->des_y_size;
 	val = (val&0xFFFFF000)|(width&0xFFF);
-	VICAP_WR_REG(VICAP_CH_DES_Y_SIZE, val);
+	vi_reg->des_y_size = val;
 }
 
 void vicap_set_y_height(unsigned int height)
 {
 	unsigned int val = 0;
 
-	val = VICAP_RD_REG(VICAP_CH_DES_Y_SIZE);
+	val = vi_reg->des_y_size;
 	val = (val&0x0000FFFF)|((height&0xFFFF)<<16);
-	VICAP_WR_REG(VICAP_CH_DES_Y_SIZE, val);
+	vi_reg->des_y_size = val;
 }
 
 void vicap_set_y_stride(unsigned int stride)
 {
-	VICAP_WR_REG(VICAP_CH_DES_Y_STRIDE, stride);
+	vi_reg->des_y_stride = stride;
 }
 
 void vicap_set_c_faddr(unsigned int addr)
 {
-	VICAP_WR_REG(VICAP_CH_DES_C_FADDR, addr);
+	vi_reg->des_c_addr = addr;
 }
 
 void vicap_set_c_width(unsigned int width)
 {
 	unsigned int val = 0;
 
-	val = VICAP_RD_REG(VICAP_CH_DES_C_SIZE);
+	val = vi_reg->des_c_size;
 	val = (val&0xFFFFF000)|(width&0xFFF);
-	VICAP_WR_REG(VICAP_CH_DES_C_SIZE, val);
+	vi_reg->des_c_size = val;
 }
 
 void vicap_set_c_height(unsigned int height)
 {
 	unsigned int val = 0;
 
-	val = VICAP_RD_REG(VICAP_CH_DES_C_SIZE);
+	val = vi_reg->des_c_size;
 	val = (val&0x0000FFFF)|((height&0xFFFF)<<16);
-	VICAP_WR_REG(VICAP_CH_DES_C_SIZE, val);
+	vi_reg->des_c_size = val;
 }
 
 void vicap_set_c_stride(unsigned int stride)
 {
-	VICAP_WR_REG(VICAP_CH_DES_C_STRIDE, stride);
+	vi_reg->des_c_stride = stride;
 }
 
 void vicap_set_hact(unsigned int hact)
 {
-	VICAP_WR_REG(VICAP_PT_HACT, hact);
+	vi_reg->hact = hact;
 }
 
 void vicap_set_vact(unsigned int vact)
 {
-	VICAP_WR_REG(VICAP_PT_VACT, vact);
+	vi_reg->vact = vact;
 }
 
 void vicap_set_crop_width(unsigned int width)
 {
 	unsigned int val = 0;
 	
-	val = VICAP_RD_REG(VICAP_CROP0_SIZE);
+	val = vi_reg->crop_size;
 	val = (val&0xFFFF0000)|(width&0xFFFF);
-	VICAP_WR_REG(VICAP_CROP0_SIZE, val);
+	vi_reg->crop_size = val;
 }
 
 void vicap_set_crop_height(unsigned int height)
 {
 	unsigned int val = 0;
 
-	val = VICAP_RD_REG(VICAP_CROP0_SIZE);
+	val = vi_reg->crop_size;
 	val = (val&0x0000FFFF)|((height&0xFFFF)<<16);
-	VICAP_WR_REG(VICAP_CROP0_SIZE, val);
+	vi_reg->crop_size = val;
 }
 
 void vicap_set_pack_y_width(unsigned int width)
 {
-	VICAP_WR_REG(VICAP_CH_PACK_Y_WIDTH, width);
+	vi_reg->pack_y_width = width;
 }
 
 void vicap_set_pack_c_width(unsigned int width)
 {
-	VICAP_WR_REG(VICAP_CH_PACK_C_WIDTH, width);
+	vi_reg->pack_c_width = width;
 }
 
 void vicap_reg_newer()
 {
-	VICAP_WR_REG(VICAP_CH_REG_NEW, 0x1);	
+	vi_reg->new = 0x1;
 }
 
 unsigned int vicap_get_ch_int_en()
 {
-	return VICAP_RD_REG(VICAP_CH_INT_MASK);
+	return vi_reg->ch_int_en;
 }
 
 unsigned int vicap_get_ch_int_status()
 {
-	return VICAP_RD_REG(VICAP_CH_INT_STA);
+	return vi_reg->ch_int;
 }
 
 unsigned int vicap_get_pt_height()
 {
 	unsigned int val;
 
-	val = VICAP_RD_REG(VICAP_PT_SIZE);
+	val = vi_reg->pt_size;
 	
 	return (val&0xFFFF0000)>>16;
 }
@@ -141,7 +145,7 @@ unsigned int vicap_get_pt_width()
 {
 	unsigned int val;
 
-	val = VICAP_RD_REG(VICAP_PT_SIZE);
+	val = vi_reg->pt_size;
 	
 	return (val&0xFFFF);
 }
@@ -149,75 +153,75 @@ unsigned int vicap_get_pt_width()
 
 void vicap_clear_ch_int(unsigned int int_mask)
 {
-	VICAP_WR_REG(VICAP_CH_INT_STA, int_mask);
-}
-
-void vicap_clear_src_int()
-{
-	INT_WR_REG(REG_INTC_SOFTINTCLEAR, CFG_VICAP_IRQEN);
+	vi_reg->ch_int = int_mask;
 }
 
 void vicap_pin_init()
 {
-	/* VICAP clk */
-	CRG_WR_REG(CRG_VICAP_CLK, 0xa); //VICAP, unreset & clock enable
+	pinmux_reg =  (hi_pinmux_regs_s *)PINMUX_REG_BASE;
+	irq_reg = (hi_irq_regs_s *)IRQ_REG_BASE;
 
-	MUXPIN_WR_REG(VIU_CLK_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_VS_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_HS_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT11_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT10_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT9_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT8_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT7_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT6_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT5_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT4_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT3_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT2_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT1_PIN, 0x0);
-	MUXPIN_WR_REG(VIU_DAT0_PIN, 0x0);
+	/* VICAP clk */
+	HI_REG_WR(CRG_REG_BASE+CRG_VICAP_CLK,  0xa);//VICAP, unreset & clock enable
+
+	pinmux_reg->vi_clk = 0x0;
+	pinmux_reg->vi_vs = 0x0;
+	pinmux_reg->vi_hs = 0x0;
+	pinmux_reg->vi_dat11 = 0x0;
+	pinmux_reg->vi_dat10 = 0x0;
+	pinmux_reg->vi_dat9 = 0x0;
+	pinmux_reg->vi_dat8 = 0x0;
+	pinmux_reg->vi_dat7 = 0x0;
+	pinmux_reg->vi_dat6 = 0x0;
+	pinmux_reg->vi_dat5 = 0x0;
+	pinmux_reg->vi_dat4 = 0x0;
+	pinmux_reg->vi_dat3 = 0x0;
+	pinmux_reg->vi_dat2 = 0x0;
+	pinmux_reg->vi_dat1 = 0x0;
+	pinmux_reg->vi_dat0 = 0x0;
 }
 
 void vicap_reg_init(void)
 {
+	vi_reg = (hi_vi_regs_s *)VI_REG_BASE;
+
 	/* relation reg config start*/
-	VICAP_WR_REG(VICAP_WK_MODE, 0x1); 
-	VICAP_WR_REG(VICAP_APB_TIMEOUT, 0x80000100);
-	VICAP_WR_REG(VICAP_PT_OFFSET0, 0xFFC00000);
-	VICAP_WR_REG(VICAP_PT_OFFSET1, 0xFFF00010); 
-	VICAP_WR_REG(VICAP_PT_OFFSET2, 0xFFF00020); 
-	VICAP_WR_REG(VICAP_TIMMING_CFG, 0x82001); 
-	VICAP_WR_REG(VICAP_DATA_CFG, 0x4); 
-	VICAP_WR_REG(VICAP_PT_HFB, 0x198); 
-	VICAP_WR_REG(VICAP_PT_HBB, 0x0); 
-	VICAP_WR_REG(VICAP_PT_VFB, 0x6); 
-	VICAP_WR_REG(VICAP_PT_VBB, 0x6); 
-	VICAP_WR_REG(VICAP_PT_VBFB, 0x0);
-	VICAP_WR_REG(VICAP_PT_VBACT, 0x0);
-	VICAP_WR_REG(VICAP_PT_VBBB, 0x0);
-	VICAP_WR_REG(VICAP_CH_ADAPTER_CFG, 0x3);
-	VICAP_WR_REG(VICAP_CH_PACK_Y_CFG, 0x10);
-	VICAP_WR_REG(VICAP_CH_CROP_CFG, 0x1); 
+	vi_reg->lowpower = 0x1;
+	vi_reg->apb = 0x80000100;
+	vi_reg->pt_offset0 = 0xFFC00000;
+	vi_reg->pt_offset1 = 0xFFF00010;
+	vi_reg->pt_offset2 = 0xFFF00020;
+	vi_reg->timing_cfg = 0x82001;
+	vi_reg->data_cfg = 0x4;
+	vi_reg->hfb = 0x198;
+	vi_reg->hbb = 0x0;
+	vi_reg->vfb = 0x6;
+	vi_reg->vbb = 0x6;
+	vi_reg->vbfb = 0x0;
+	vi_reg->vbact = 0x0;
+	vi_reg->vbbb = 0x0;
+	vi_reg->adapter = 0x3;
+	vi_reg->pack_y = 0x10;
+	vi_reg->crop_cfg = 0x1;
 	/* relation reg config end */
 
 	/* config AXI_CFG */
-	VICAP_WR_REG(VICAP_AXI_CFG, 0x3);
+	vi_reg->axi = 0x3;
 
 	/* port config */
-	VICAP_WR_REG(VICAP_PT_SEL, 0x0);	//external input
+	vi_reg->pt_sel = 0x0;
 
 	/* channel config */
-	VICAP_WR_REG(VICAP_CH_SEL, 0x0);	//isp bypass
-	VICAP_WR_REG(VICAP_CH_INT_MASK, FSTART_EN|CC_INT_EN);
+	vi_reg->ch_sel = 0x0;
+	vi_reg->ch_int_en = FSTART_EN|CC_INT_EN;
 
 	/* vicap global interrupt config */
-	VICAP_WR_REG(VICAP_INT_MASK, CH0_INT_EN);
+	vi_reg->g_int_en = CH0_INT_EN;
 
 	/* interface config */
-	VICAP_WR_REG(VICAP_PT_INTF_MOD, PT_EN);
+	vi_reg->pt_mode = PT_EN;
 
 	/* enable channel */
-	VICAP_WR_REG(VICAP_CH_CTRL, CH_EN);	//enable channel
+	vi_reg->ch_ctrl = CH_EN;
 }
 

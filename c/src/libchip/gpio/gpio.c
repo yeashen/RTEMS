@@ -27,7 +27,6 @@ static rtems_isr gpio_isr(rtems_vector_number vector)
 	int_sta = hi_gpio_int_query();
 	if(int_sta & (1<<GPIO_PIN0)){
 		printk("gpio0 interrupt\n");
-		bsp_interrupt_vector_clear(vector);
 		hi_gpio_int_clear(GPIO_PIN0);
 	}
 }

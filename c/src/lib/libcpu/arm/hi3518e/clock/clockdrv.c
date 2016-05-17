@@ -20,10 +20,26 @@
 #include <bsp.h>
 #include <hi3518e.h>
 
+#define CFG_TIMER_ENABLE			(1 << 7)
+#define CFG_TIMER_PERIODIC		(1 << 6)
+#define CFG_TIMER_INTMASK		(1 << 5)
+#define CFG_TIMER_32BIT			(1 << 1)
+
+#define CFG_TIMER_IRQEN			(1<<3)
+
+#define CFG_TIMER_CONTROL		(CFG_TIMER_ENABLE | CFG_TIMER_PERIODIC\
+					| CFG_TIMER_INTMASK | CFG_TIMER_32BIT)
+
+#define CFG_TIMER_PRESCALE		2 /* AXI:APB = 2:1 */
+#define HZ									100 /* 10ms */
+#define BUSCLK_TO_TIMER_RELOAD(busclk)	 (((busclk)/CFG_TIMER_PRESCALE)/HZ)
+
 void Clock_isr(rtems_irq_hdl_param arg);
 static void clock_isr_on(const rtems_irq_connect_data *unused);
 static void clock_isr_off(const rtems_irq_connect_data *unused);
 static int clock_isr_is_on(const rtems_irq_connect_data *irq);
+
+static hi_timer_regs_s *timer0_reg = (hi_timer_regs_s *)TIMER0_REG_BASE;
 
 rtems_irq_connect_data clock_isr_data = {
 	.name 	= BSP_INT_TIMER0_1,
@@ -41,8 +57,7 @@ rtems_irq_connect_data clock_isr_data = {
  */
 #define Clock_driver_support_at_tick()                \
 	do {																							\
-		/*INT_WR_REG(REG_INTC_SOFTINTCLEAR, 1<<BSP_INT_TIMER0_1);	*/\
-		TIMER0_WR_REG(REG_TIMER0_INTCLR, 0);\
+		timer0_reg->icr = 0x0; \
 	} while(0)
 
 
@@ -73,9 +88,9 @@ rtems_irq_connect_data clock_isr_data = {
 		/* set clock source busclk */ \
 		HI_REG_WR(REG_BASE_SCTL+REG_SC_CTRL, HI_REG_RD(REG_BASE_SCTL+REG_SC_CTRL) \
 					| (1<<16) | (1<<18) | (1<<20));\
-		TIMER0_WR_REG(REG_TIMER_CONTROL, 0);\
-		TIMER0_WR_REG(REG_TIMER_RELOAD, BUSCLK_TO_TIMER_RELOAD(CFG_CLK_BUS));\
-		TIMER0_WR_REG(REG_TIMER_CONTROL, CFG_TIMER_CONTROL);\
+		timer0_reg->ctrl = 0x0; \
+		timer0_reg->load = BUSCLK_TO_TIMER_RELOAD(CFG_CLK_BUS); \
+		timer0_reg->ctrl = CFG_TIMER_CONTROL;\
 		} while (0)
 
 /**

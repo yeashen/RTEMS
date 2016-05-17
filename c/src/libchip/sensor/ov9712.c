@@ -62,17 +62,23 @@ static SENSOR_DATA_S ov9712_init_para_640_400_colorbar[] = {
 	{0x07, 0x00},{0x41, 0x50},
 };
 
+static int i2c_minor = 0;
 
 /* download ov9712 settings to sensor through i2c */
 static int ov9712_download_firmware(SENSOR_DATA_S *pModeSetting, int ArySize)
 {
 	int i, ret;
 	uint32_t reg_addr, val;
+	i2c_para_s i2c_para;
+
+	i2c_para.dev_addr = SENSOR_I2C_ADDR;
+	i2c_para.reg_byte = 1;
+	i2c_para.data_byte = 1;
 
 	for(i = 0; i < ArySize; ++i, ++pModeSetting){
-		reg_addr = pModeSetting->reg_addr;
-		val = pModeSetting->data;
-		ret = hi_i2c_write(SENSOR_I2C_ADDR, reg_addr, 1, val, 1);
+		i2c_para.reg_addr = pModeSetting->reg_addr;
+		i2c_para.data = pModeSetting->data;
+		ret = hi_i2c_write(i2c_minor, &i2c_para);
 		if(ret < 0){
 			printk("i2c write addr=0x%x val=0x%x error!\n", reg_addr, val);
 			return ret;
@@ -88,7 +94,7 @@ int sensor_ov9712_init(SENSOR_RES_E mode)
 	SENSOR_DATA_S *pModeSetting = NULL;
 	int ArySize = 0, ret = 0;
 
-	hi_i2c_init();
+	hi_i2c_init(i2c_minor);
 
 	switch(mode){
 		case MODE_640x400:
@@ -117,11 +123,27 @@ int sensor_ov9712_init(SENSOR_RES_E mode)
 
 int sensor_ov9712_read(SENSOR_DATA_S *sensor_data)
 {
-	return hi_i2c_read(SENSOR_I2C_ADDR, sensor_data->reg_addr, 1, &sensor_data->data, 1);
+	i2c_para_s i2c_para;
+
+	i2c_para.dev_addr = SENSOR_I2C_ADDR;
+	i2c_para.reg_addr = sensor_data->reg_addr;
+	i2c_para.reg_byte = 1;
+	i2c_para.data_byte = 1;
+	hi_i2c_read(i2c_minor, &i2c_para);
+
+	return i2c_para.data;
 }
 
 int sensor_ov9712_write(SENSOR_DATA_S *sensor_data)
 {
-	return hi_i2c_write(SENSOR_I2C_ADDR, sensor_data->reg_addr, 1, sensor_data->data, 1);
+	i2c_para_s i2c_para;
+
+	i2c_para.dev_addr = SENSOR_I2C_ADDR;
+	i2c_para.reg_addr = sensor_data->reg_addr;
+	i2c_para.reg_byte = 1;
+	i2c_para.data = sensor_data->data;
+	i2c_para.data_byte = 1;
+
+	return hi_i2c_write(i2c_minor, &i2c_para);
 } 
 

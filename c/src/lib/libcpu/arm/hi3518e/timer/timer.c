@@ -21,6 +21,7 @@
 #include <hi3518e.h>
 
 bool benchmark_timer_find_average_overhead;
+static hi_timer_regs_s *timer1_reg = NULL;
 
 #define TIMER_LOAD_VAL 0xffffffff
 
@@ -30,7 +31,7 @@ static unsigned long lastdec;
 void reset_timer_masked(void)
 {
 	/* reset time */
-	lastdec = TIMER1_RD_REG(REG_TIMER_VALUE);  /* capure current decrementer value time */
+	lastdec = timer1_reg->value;  /* capure current decrementer value time */
 	timestamp = 0;	       /* start "advancing" time stamp from 0 */
 }
 
@@ -39,9 +40,12 @@ void reset_timer_masked(void)
  */
 void benchmark_timer_initialize( void )
 {
+	uint32_t tmp;
+	timer1_reg = (hi_timer_regs_s *)TIMER1_REG_BASE;
+
 	/* enable the reference clk. but we did not find the reset switch */
-	HI_REG_WR(REG_BASE_SCTL+REG_SC_CTRL, HI_REG_RD(REG_BASE_SCTL+REG_SC_CTRL) \
-					| (1<<16) | (1<<18) | (1<<20));
+	tmp = timer1_reg->ctrl;
+	timer1_reg->ctrl = tmp | (1<<16) | (1<<18) | (1<<20);
 	
 	/*
 	 * Under uboot, 0xffffffff is set to load register,
@@ -49,11 +53,11 @@ void benchmark_timer_initialize( void )
 	 * e.g. BUSCLK = 50M, it will roll back after 0xffffffff/timer_clk
 	 * = 43980s = 12hours
 	 */
-	TIMER1_WR_REG(REG_TIMER_CONTROL, 0);
-	TIMER1_WR_REG(REG_TIMER_RELOAD, ~0);
+	timer1_reg->ctrl = 0x0;
+	timer1_reg->load = 0xFFFFFFFF;
 
 	/* 32 bit, periodic,	256 divider. */
-	TIMER1_WR_REG(REG_TIMER_CONTROL, 0xCA);
+	timer1_reg->ctrl = 0xCA;
 
 	/* init the timestamp and lastdec value */
 	reset_timer_masked();
@@ -76,7 +80,8 @@ benchmark_timer_t benchmark_timer_read( void )
 	 *	interrupts since the timer was initialized and clicks since the last
 	 *	interrupts.
 	 */
-	unsigned long now = TIMER1_RD_REG(REG_TIMER_VALUE); 	/* current tick value */
+	unsigned long now = timer1_reg->value; 	/* current tick value */
+	
 	
 		if (lastdec >= now) {
 			/* normal mode, not roll back */

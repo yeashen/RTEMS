@@ -1,6 +1,16 @@
 #ifndef _VICAP_DRV_H
 #define _VICAP_DRV_H
 
+#define PT_EN			(1<<31)
+#define CH_EN			(1<<31)
+#define ISP_INT_EN		(1<<24)
+#define PT0_INT_EN		(1<<16)
+#define CH0_INT_EN		(1<<0)
+#define FIELD_THROW_EN  (1<<3)
+#define BUF_OVF_EN		(1<<2)
+#define CC_INT_EN		(1<<1)
+#define FSTART_EN		(1<<0)
+
 void vicap_set_y_faddr(unsigned int addr);
 
 void vicap_set_y_width(unsigned int width);
@@ -37,8 +47,6 @@ unsigned int vicap_get_ch_int_status(void);
 void vicap_reg_newer(void);
 
 void vicap_clear_ch_int(unsigned int int_mask);
-
-void vicap_clear_src_int();
 
 unsigned int vicap_get_pt_height();
 

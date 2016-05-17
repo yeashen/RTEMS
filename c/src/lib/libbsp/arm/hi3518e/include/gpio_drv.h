@@ -1,6 +1,10 @@
 #ifndef _GPIO_DRV_H
 #define _GPIO_DRV_H
 
+#define CFG_GPIO0_IRQEN				(1<<29)
+#define CFG_GPIO3_IRQEN				(1<<30)
+#define CFG_GPIO6_IRQEN				(1<<31)
+
 typedef enum
 {
 	GPIO_PIN0 = 0,

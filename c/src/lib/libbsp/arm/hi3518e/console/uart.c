@@ -19,6 +19,8 @@
 #include <rtems/libio.h>
 #include <termios.h>
 #include <rtems/bspIo.h>
+#include <assert.h>
+#include <rtems/error.h>
 
 #include <libchip/serial.h>
 #include <libchip/sersupp.h>
@@ -35,13 +37,6 @@ static void    hi_uart_initialize(int minor);
 static void    hi_uart_write_polled(int minor, char c);
 int  hi_uart_read_polled(int minor);
 static int     hi_uart_set_attributes(int minor, const struct termios *t);
-
-static unsigned int hi_uart_get_baseaddr(int minor)
-{
-  const console_tbl *ct = &Console_Configuration_Ports[minor];
-
-  return ct->ulCtrlPort1;
-}
 
 /* Pointers to functions for handling the UART. */
 const console_fns hi_uart_fns = {
@@ -127,6 +122,17 @@ console_tbl Console_Configuration_Ports[] = {
 /* These are used by code in console.c */
 unsigned long Console_Configuration_Count = RTEMS_ARRAY_SIZE(Console_Configuration_Ports);
 
+typedef struct {
+    int minor;
+    hi_uart_regs_s * regs;
+    volatile const char *buf;
+    volatile int len;
+    volatile int idx;
+    void *tty;
+} hi_uart_data_s;
+
+static hi_uart_data_s hi_uart_data[3];
+
 /*********************************************************************/
 /* Functions called via termios callbacks (i.e. the ones in uart_fns */
 /*********************************************************************/
@@ -164,21 +170,21 @@ static int hi_uart_last_close(int major, int minor, void *arg)
 static int hi_uart_read(int minor)
 {
 	unsigned int data;
-	unsigned int baseaddr = hi_uart_get_baseaddr(minor);
 
 	/* Wait until there is data in the FIFO */
-	while(UART_RD_REG(baseaddr, UART_PL01x_FR) & UART_PL01x_FR_RXFE);
-	data = UART_RD_REG(baseaddr, UART_PL01x_DR);
+	while(hi_uart_data[minor].regs->fr & UART_PL01x_FR_RXFE);
+	data = hi_uart_data[minor].regs->dr;
 
 	/* Check for an error flag */
 	if (data & 0xFFFFFF00) {
 		/* Clear the error */
-		UART_WR_REG(baseaddr, UART_PL01x_ECR, 0xFFFFFFFF);
+		hi_uart_data[minor].regs->rsr = 0xFFFFFFFF;
 		return -1;
 	}
 
 	return (int) data;
 }
+
 
 /*
  * Write buffer to UART
@@ -188,58 +194,83 @@ static int hi_uart_read(int minor)
 static ssize_t hi_uart_write(int minor, const char *buf, size_t len)
 {
 	int i;
-	unsigned int baseaddr = hi_uart_get_baseaddr(minor);
 
 	 for (i = 0; i < len; i++){
 		/* Wait until there is space in the FIFO */
-		while (UART_RD_REG(baseaddr, UART_PL01x_FR) & UART_PL01x_FR_TXFF);
+		while(hi_uart_data[minor].regs->fr & UART_PL01x_FR_TXFF);
 		/* Send the character */
-		UART_WR_REG(baseaddr, UART_PL01x_DR, buf[i]);
+		hi_uart_data[minor].regs->dr = buf[i];
 	 }
 
-    return 1;
+		return 1;
 }
 
-
-/* Set up the UART. */
-static void hi_uart_initialize(int minor)
+static void hi_uart_set_baud(int minor, int baud)
 {
 	unsigned int temp;
 	unsigned int divider;
 	unsigned int remainder;
 	unsigned int fraction;
-	unsigned int baseaddr = hi_uart_get_baseaddr(minor);
 
-	/*
-	 ** First, disable everything.
-	 */
-	 UART_WR_REG(baseaddr, UART_PL011_CR, 0x0);
-	/*
-	 ** Set baud rate
-	 **
-	 ** IBRD = UART_CLK / (16 * BAUD_RATE)
-	 ** FBRD = ROUND((64 * MOD(UART_CLK,(16 * BAUD_RATE))) / (16 * BAUD_RATE))
-	 */
-	temp = 16 * UART_BAUDRATE;
+	temp = 16 * baud;
 	divider = UART_PL011_CLOCK / temp;
 	remainder = UART_PL011_CLOCK % temp;
 	temp = (8 * remainder) / UART_BAUDRATE;
 	fraction = (temp >> 1) + (temp & 1);
 
-	UART_WR_REG(baseaddr, UART_PL011_IBRD, divider);
-	UART_WR_REG(baseaddr, UART_PL011_FBRD, fraction);
+	hi_uart_data[minor].regs->ibrd = divider;
+	hi_uart_data[minor].regs->fbrd = fraction;
+}
+
+/* Set up the UART. */
+static void hi_uart_initialize(int minor)
+{
+	hi_uart_data[minor].minor = minor;
+	hi_uart_data[minor].buf 	= NULL;
+	hi_uart_data[minor].len 	= 0;
+	hi_uart_data[minor].idx 	= 0;
+
+	switch(minor)
+	{
+		case 0:
+			hi_uart_data[minor].regs = (hi_uart_regs_s *) UART0_REG_BASE;
+			break;
+		case 1:
+			hi_uart_data[minor].regs = (hi_uart_regs_s *) UART1_REG_BASE;
+			break;
+		case 2:
+			hi_uart_data[minor].regs = (hi_uart_regs_s *) UART2_REG_BASE;
+			break;
+		default:
+			rtems_panic("%s:%d Unknown UART minor number %d\n", __FUNCTION__, __LINE__, minor);
+			break;
+	}
+	
+	/*
+	 ** First, disable everything.
+	 */
+	 hi_uart_data[minor].regs->cr = 0x0;
+
+	/*
+		** Set baudrate
+		*/
+	hi_uart_set_baud(minor, 115200);	
 
 	/*
 	 ** Set the UART to be 8 bits, 1 stop bit, no parity, fifo enabled.
 	 */
-	UART_WR_REG(baseaddr, UART_PL011_LCRH, (UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN));
+	hi_uart_data[minor].regs->lcr_h = UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN;
+
+#if USE_INTERRUPTS
+	hi_uart_data[minor].regs->imsc = UART_PL011_IMSC_RXIM|UART_PL011_IMSC_TXIM;
+#endif
 
 	/*
 	 ** Finally, enable the UART
 	 */
-	UART_WR_REG(baseaddr, UART_PL011_CR, (UART_PL011_CR_UARTEN | 
-			UART_PL011_CR_TXE | UART_PL011_CR_RXE)); 
+	hi_uart_data[minor].regs->cr = UART_PL011_CR_UARTEN | UART_PL011_CR_TXE | UART_PL011_CR_RXE;
 }
+
 
 /* I'm not sure this is needed for the shared console driver. */
 static void    hi_uart_write_polled(int minor, char c)

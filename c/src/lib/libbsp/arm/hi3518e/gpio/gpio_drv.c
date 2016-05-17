@@ -19,87 +19,92 @@
 #include <hi3518e.h>
 #include <gpio_drv.h>
 
+static hi_pinmux_regs_s *hi_pinmux_reg = NULL;
+static hi_gpio_regs_s *gpio_reg = NULL;
+
 void hi_gpio_set_derection(GPIO_PIN_NUM pin, GPIO_DIRECTION dir)
 {
-	unsigned int val = GPIO_RD_REG(GPIO_DIR);
+	hi_pinmux_reg = (hi_pinmux_regs_s *)PINMUX_REG_BASE;
+	gpio_reg = (hi_gpio_regs_s *)GPIO9_REG_BASE;
+	unsigned int val = gpio_reg->dir;
+
+	hi_pinmux_reg->gpio9_1 = 0x1;
 
 	if(dir == GPIO_OUTPUT){
-		GPIO_WR_REG(GPIO_DIR, val|(1<<pin));
+		gpio_reg->dir = val|(1<<pin);
 	}else{
-		GPIO_WR_REG(GPIO_DIR, val&(~(1<<pin)));
+		gpio_reg->dir =val&(~(1<<pin));
 	}
 }
 
 unsigned int hi_gpio_get(GPIO_PIN_NUM pin)
 {
-	unsigned int offset = 0;
+	unsigned int value = 0;
 
 	switch(pin){
 		case GPIO_PIN0:
-			offset = GPIO_0_DATA;
+			value = gpio_reg->data0;
 			break;
 		case GPIO_PIN1:
-			offset = GPIO_1_DATA;
+			value = gpio_reg->data1;
 			break;
 		case GPIO_PIN2:
-			offset = GPIO_2_DATA;
+			value = gpio_reg->data2;
 			break;
 		case GPIO_PIN3:
-			offset = GPIO_3_DATA;
+			value = gpio_reg->data3;
 			break;
 		case GPIO_PIN4:
-			offset = GPIO_5_DATA;
+			value = gpio_reg->data4;
 			break;
 		case GPIO_PIN5:
-			offset = GPIO_5_DATA;
+			value = gpio_reg->data5;
 			break;
 		case GPIO_PIN6:
-			offset = GPIO_6_DATA;
+			value = gpio_reg->data6;
 			break;
 		case GPIO_PIN7:
-			offset = GPIO_7_DATA;
+			value = gpio_reg->data7;
 			break;
 		default:
 			break;
 	}
 	
-	return GPIO_RD_REG(offset);
+	return value;
 }
 
 void hi_gpio_set(GPIO_PIN_NUM pin, unsigned int val)
 {
-	unsigned int offset = 0;
+	unsigned int value = (val==0)?0:1;
 
 	switch(pin){
 		case GPIO_PIN0:
-			offset = GPIO_0_DATA;
+			gpio_reg->data0 = value;
 			break;
 		case GPIO_PIN1:
-			offset = GPIO_1_DATA;
+			gpio_reg->data1 = value;
 			break;
 		case GPIO_PIN2:
-			offset = GPIO_2_DATA;
+			gpio_reg->data2 = value;
 			break;
 		case GPIO_PIN3:
-			offset = GPIO_3_DATA;
+			gpio_reg->data3 = value;
 			break;
 		case GPIO_PIN4:
-			offset = GPIO_5_DATA;
+			gpio_reg->data4 = value;
 			break;
 		case GPIO_PIN5:
-			offset = GPIO_5_DATA;
+			gpio_reg->data5 = value;
 			break;
 		case GPIO_PIN6:
-			offset = GPIO_6_DATA;
+			gpio_reg->data6 = value;
 			break;
 		case GPIO_PIN7:
-			offset = GPIO_7_DATA;
+			gpio_reg->data7 = value;
 			break;
 		default:
 			break;
 	}
-
-	GPIO_WR_REG(offset, (val==0)?0:1);
 }
 
 void hi_gpio_int_config(GPIO_INT_PATA *para)
@@ -109,43 +114,43 @@ void hi_gpio_int_config(GPIO_INT_PATA *para)
 
 	pin = para->pin_int;
 
-	MUXPIN_WR_REG(GPIO9_0_PIN+(pin*4), 0x1);
+	// TODO: pinmux config
 
-	tmp = GPIO_RD_REG(GPIO_IS);
+	tmp = gpio_reg->is;
 	type = para->type;
 	edge = para->edge_type;
 	if(type == GPIO_EDGE_TRIG){
-		GPIO_WR_REG(GPIO_IS, tmp&(~(1<<pin)));
-		tmp = GPIO_RD_REG(GPIO_IBE);
+		gpio_reg->is = tmp&(~(1<<pin));
+		tmp = gpio_reg->ibe;
 		if(edge == GPIO_SIGGLE_EDGE){
-			GPIO_WR_REG(GPIO_IBE, tmp&(~(1<<pin)));
+			gpio_reg->ibe = tmp&(~(1<<pin));
 		}else{
-			GPIO_WR_REG(GPIO_IBE, tmp|(1<<pin));
+			gpio_reg->ibe = tmp|(1<<pin);
 		}
 	}else{
-		GPIO_WR_REG(GPIO_IS, tmp|(1<<pin));
+		gpio_reg->is = tmp|(1<<pin);
 	}
 
-	tmp = GPIO_RD_REG(GPIO_IEV);
+	tmp =gpio_reg->iev;
 	iev = para->iev;
 	if((iev == GPIO_FALLING_TRIG) || (iev == GPIO_LOW_TRIG)){
-		GPIO_WR_REG(GPIO_IEV, tmp&(~(1<<pin)));
+		gpio_reg->iev = tmp&(~(1<<pin));
 	}else{
-		GPIO_WR_REG(GPIO_IEV, tmp|(1<<pin));
+		gpio_reg->iev = tmp|(1<<pin);
 	}
 	
-	GPIO_WR_REG(GPIO_IC, 0xFF);
+	gpio_reg->ic = 0xFF;
 
-	tmp = GPIO_RD_REG(GPIO_IE);
-	GPIO_WR_REG(GPIO_IE, tmp|(1<<pin));
+	tmp = gpio_reg->ie;
+	gpio_reg->ie = tmp|(1<<pin);
 }
 
 unsigned int hi_gpio_int_query()
 {
-	return GPIO_RD_REG(GPIO_RIS);
+	return gpio_reg->ris;
 }
 
 void hi_gpio_int_clear(GPIO_PIN_NUM pin)
 {
-	GPIO_WR_REG(GPIO_IC, 1<<pin);
+	gpio_reg->ic = 1<<pin;
 }

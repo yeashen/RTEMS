@@ -6,6 +6,8 @@
 #define HI_REG_WR(a, v)		(*(volatile unsigned int *)(a) = (v))
 #define HI_REG_RD(a)		(*(volatile unsigned int *)(a))
 
+/*************************System****************************************/
+
 /*
  * Get frequency of bus clock.
  * Clock for arm9 is supplied by APLL.
@@ -34,356 +36,241 @@
 /* cpu version */
 #define SYSID_RGE_BASE					0x20050EE0
 
-/* irq */
-#define REG_BASE_INTC					0x10140000
-#define REG_INTC_IRQSTATUS		0x000
-#define REG_INTC_FIQSTATUS			0x004
-#define REG_INTC_RAWSTATUS		0x008
-#define REG_INTC_INTSELECT			0x00C
-#define REG_INTC_INTENABLE			0x010
-#define REG_INTC_INTENCLEAR		0x014
-#define REG_INTC_SOFTINT				0x018
-#define REG_INTC_SOFTINTCLEAR	0x01C
-#define REG_INTC_PROTECTION		0x020
-#define INT_RD_REG(offset)				(HI_REG_RD(REG_BASE_INTC+offset))
-#define INT_WR_REG(offset, val)		(HI_REG_WR(REG_BASE_INTC+offset, val))
-
-#define DDR_MEM_BASE			0x80000000
-#define SFC_MEM_BASE			0x58000000
-#define ARM_REG_BASE			0x20300000
-#define GPIO11_REG_BASE			0x201F0000
-#define GPIO10_REG_BASE			0x201E0000
-//#define GPIO9_REG_BASE			0x201D0000
-#define GPIO8_REG_BASE			0x201C0000
-#define GPIO7_REG_BASE			0x201B0000
-#define GPIO6_REG_BASE			0x201A0000
-#define GPIO5_REG_BASE			0x20190000
-#define GPIO4_REG_BASE			0x20180000
-#define GPIO3_REG_BASE			0x20170000
-#define GPIO2_REG_BASE			0x20160000
-#define GPIO1_REG_BASE			0x20150000
-#define GPIO0_REG_BASE			0x20140000
-#define PWM_REG_BASE			0x20130000
-#define DDR_PHY_BASE			0x20120000
-#define DDRC_REG_BASE			0x20110000
-
-#define RTC_REG_BASE			0x20060000
 #define REG_BASE_SCTL			0x20050000
-#define REG_SC_CTRL			0
-#define REG_SC_SYSRES			0x4
-
-#define WDG_REG_BASE			0x20040000
+#define REG_SC_CTRL				0x0
 #define CRG_REG_BASE			0x20030000
-#define REG_ETH_CRG			0xCC
-
-/***************************MuxPin Ctrl	********************************/
-#define IO_CONFIG_REG_BASE		0x200F0000
-#define SENSOR_CLK_PIN				0x008
-#define I2C_SDA_PIN					0x018
-#define I2C_SCL_PIN						0x01C
-#define UART1_RXD_PIN				0x024
-#define UART1_TXD_PIN				0x028
-#define GPIO9_0_PIN					0x0C8
-#define GPIO9_1_PIN					0x0CC
-#define GPIO9_2_PIN					0x0D0
-#define GPIO9_3_PIN					0x0D4
-#define GPIO9_4_PIN					0x0D8
-#define GPIO9_5_PIN					0x0DC
-#define GPIO9_6_PIN					0x0E0
-#define GPIO9_7_PIN					0x0E4
-#define VIU_CLK_PIN					0x140
-#define VIU_VS_PIN						0x144
-#define VIU_HS_PIN						0x148
-#define VIU_DAT11_PIN				0x14C
-#define VIU_DAT10_PIN				0x150
-#define VIU_DAT9_PIN					0x154
-#define VIU_DAT8_PIN					0x158
-#define VIU_DAT7_PIN					0x15C
-#define VIU_DAT6_PIN					0x160
-#define VIU_DAT5_PIN					0x164
-#define VIU_DAT4_PIN					0x168
-#define VIU_DAT3_PIN					0x16C
-#define VIU_DAT2_PIN					0x170
-#define VIU_DAT1_PIN					0x174
-#define VIU_DAT0_PIN					0x178
-#define MUXPIN_RD_REG(offset)				(HI_REG_RD(IO_CONFIG_REG_BASE+offset))
-#define MUXPIN_WR_REG(offset, val)		(HI_REG_WR(IO_CONFIG_REG_BASE+offset, val))
-
-/*************************Timer****************************************/
-#define TIMER1_REG_BASE			0x20010000
-#define TIMER0_REG_BASE			0x20000000
-#define REG_TIMER_RELOAD		0x0
-#define REG_TIMER_VALUE			0x4
-#define REG_TIMER_CONTROL		0x8
-#define REG_TIMER0_INTCLR		0xC
-
-#define CFG_TIMER_ENABLE			(1 << 7)
-#define CFG_TIMER_PERIODIC		(1 << 6)
-#define CFG_TIMER_INTMASK		(1 << 5)
-#define CFG_TIMER_32BIT			(1 << 1)
-
-#define CFG_TIMER_IRQEN			(1<<3)
-
-#define CFG_TIMER_CONTROL		(CFG_TIMER_ENABLE | CFG_TIMER_PERIODIC\
-					| CFG_TIMER_INTMASK | CFG_TIMER_32BIT)
-
-#define CFG_TIMER_PRESCALE		2 /* AXI:APB = 2:1 */
-#define HZ									100 /* 10ms */
-#define BUSCLK_TO_TIMER_RELOAD(busclk)	 (((busclk)/CFG_TIMER_PRESCALE)/HZ)
-
-#define TIMER0_RD_REG(offset)				(HI_REG_RD(TIMER0_REG_BASE+offset))
-#define TIMER0_WR_REG(offset, val)		(HI_REG_WR(TIMER0_REG_BASE+offset, val))
-#define TIMER1_RD_REG(offset)				(HI_REG_RD(TIMER1_REG_BASE+offset))
-#define TIMER1_WR_REG(offset, val)		(HI_REG_WR(TIMER1_REG_BASE+offset, val))
-
-
-#define REG_BASE_SF			0x10090000
-#define SFC_REG_BASE			0x10010000
-/* for u-boot enable TCM */
-#define MEM_BASE_ITCM			0x00000000
-#define MEM_SIZE_ITCM			0x00000800
-#define MEM_CONF_ITCM_SIZE		3
-
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-#define REG_SYSSTAT			0x8C
-/* boot mode */
-#define BOOT_FROM_SPI			0
-
-/******************PLL CONFIG START************************************/
-/* APLL CONFIG */
-#define REG_CRG0_OFFSET			(CRG_REG_BASE + 0)
-#define REG_CRG0_VALUE			0x09000000 /* reset value */
-#define REG_CRG1_OFFSET			(CRG_REG_BASE + 0x4)
-#define REG_CRG1_VALUE			0x006c309B /* reset value */
-
 /* BPLL CONFIG */
 #define REG_CRG4_OFFSET			(CRG_REG_BASE + 0x10)
 #define REG_CRG5_OFFSET			(CRG_REG_BASE + 0x14)
+#define CRG_VICAP_CLK				0x002C
+#define CRG_SENSOR_CLK			0x0030
 
-/* EPLL CONFIG */
-#define REG_CRG6_OFFSET			(CRG_REG_BASE + 0x18)
-#define REG_CRG7_OFFSET			(CRG_REG_BASE + 0x1c)
-#define REG_CRG8_OFFSET			(CRG_REG_BASE + 0x20)
-
-/* ARM9 freq mode A9:AXI CONFIG */
-#define REG_CRG10_OFFSET		(CRG_REG_BASE + 0x28)
-
-/* PLL LOCK READ CONFIG */
-#define REG_CRG58_OFFSET		(CRG_REG_BASE + 0xE8)
-
-/* APLL WAIT TIME CONFIG */
-#define REG_PLLCTL_OFFSET		(REG_BASE_SCTL + 0x14)
-
-/*wait time: 0x2000000-0x1fff000*/
-#define BITOFFSET_PLLCTL_PLLTIME	3
-#define BITMASK_PLLCTL_PLLTIME		0xf0000007
-#define BITVALUE_PLLCTL_PLLTIME		0x1fff000
-
-/*0: apll controlled by mode switching*/
-#define BITOFFSET_PLLCTL_PLLOVER	0
-#define BITMASK_PLLCTL_PLLOVER		0xfffffffe
-#define BITVALUE_PLLCTL_PLLOVER		0x0
-
-#define SC_LOCKEN_OFFSET		(REG_BASE_SCTL + 0x44)
-#define SC_LOCKEN_VALUE			0x1acce551
-
-/* nand flash */
-#define NANDC_REG_BASE			0x10000000
-#define NAND_MEM_BASE			0x50000000
-/******************PLL CONFIG END************************************/
-
-/******************SVB VOLTAGE ADJUSTMENT****************************/
-#define PWM_FREQ_OFFSET			0x200	/* for pwm frequency */
-#define SPACE_RARIO_DEFAULT		0x204	/* for default voltage(1.2v) */
-
-#define MAX_CORNER_AA			0x208
-#define MAX_CORNER_BB			0x20c
-
-#define SPACE_RATIO_AA			0x210
-#define SPACE_RATIO_BB			0x214
-#define SPACE_RATIO_CC			0x218
-
-/******************UART  PL011************************************/
+/*************************Base Address****************************************/
+/* PinMux */
+#define PINMUX_REG_BASE			0x200F0000
+/* Interrupt */
+#define IRQ_REG_BASE					0x10140000
+/* Timer */
+#define TIMER0_REG_BASE			0x20000000
+#define TIMER1_REG_BASE			0x20010000
+/* UART */
 #define UART0_REG_BASE			0x20080000
 #define UART1_REG_BASE			0x20090000
 #define UART2_REG_BASE			0x200A0000
-
-#define UART_PL01x_DR                   0x00	 /*  Data read or written from the interface. */
-#define UART_PL01x_RSR                  0x04	 /*  Receive status register (Read). */
-#define UART_PL01x_ECR                  0x04	 /*  Error clear register (Write). */
-#define UART_PL01x_FR                   0x18	 /*  Flag register (Read only). */
-
-#define UART_PL01x_RSR_OE               0x08
-#define UART_PL01x_RSR_BE               0x04
-#define UART_PL01x_RSR_PE               0x02
-#define UART_PL01x_RSR_FE               0x01
-
-#define UART_PL01x_FR_TXFE              0x80
-#define UART_PL01x_FR_RXFF              0x40
-#define UART_PL01x_FR_TXFF              0x20
-#define UART_PL01x_FR_RXFE              0x10
-#define UART_PL01x_FR_BUSY              0x08
-#define UART_PL01x_FR_TMSK              (UART_PL01x_FR_TXFF + UART_PL01x_FR_BUSY)
-
-#define UART_BAUDRATE				115200
-#define UART_PL011_CLOCK			3000000 /* hi3518 use fixed clk 3MHZ */
-
-#define UART_PL011_IBRD                 0x24
-#define UART_PL011_FBRD                 0x28
-#define UART_PL011_LCRH                 0x2C
-#define UART_PL011_CR                   0x30
-#define UART_PL011_IMSC                 0x38
-#define UART_PL011_PERIPH_ID0           0xFE0
-
-#define UART_PL011_LCRH_SPS             (1 << 7)
-#define UART_PL011_LCRH_WLEN_8          (3 << 5)
-#define UART_PL011_LCRH_WLEN_7          (2 << 5)
-#define UART_PL011_LCRH_WLEN_6          (1 << 5)
-#define UART_PL011_LCRH_WLEN_5          (0 << 5)
-#define UART_PL011_LCRH_FEN             (1 << 4)
-#define UART_PL011_LCRH_STP2            (1 << 3)
-#define UART_PL011_LCRH_EPS             (1 << 2)
-#define UART_PL011_LCRH_PEN             (1 << 1)
-#define UART_PL011_LCRH_BRK             (1 << 0)
-
-#define UART_PL011_CR_CTSEN             (1 << 15)
-#define UART_PL011_CR_RTSEN             (1 << 14)
-#define UART_PL011_CR_OUT2              (1 << 13)
-#define UART_PL011_CR_OUT1              (1 << 12)
-#define UART_PL011_CR_RTS               (1 << 11)
-#define UART_PL011_CR_DTR               (1 << 10)
-#define UART_PL011_CR_RXE               (1 << 9)
-#define UART_PL011_CR_TXE               (1 << 8)
-#define UART_PL011_CR_LPE               (1 << 7)
-#define UART_PL011_CR_IIRLP             (1 << 2)
-#define UART_PL011_CR_SIREN             (1 << 1)
-#define UART_PL011_CR_UARTEN            (1 << 0)
-
-#define UART_PL011_IMSC_OEIM            (1 << 10)
-#define UART_PL011_IMSC_BEIM            (1 << 9)
-#define UART_PL011_IMSC_PEIM            (1 << 8)
-#define UART_PL011_IMSC_FEIM            (1 << 7)
-#define UART_PL011_IMSC_RTIM            (1 << 6)
-#define UART_PL011_IMSC_TXIM            (1 << 5)
-#define UART_PL011_IMSC_RXIM            (1 << 4)
-#define UART_PL011_IMSC_DSRMIM          (1 << 3)
-#define UART_PL011_IMSC_DCDMIM          (1 << 2)
-#define UART_PL011_IMSC_CTSMIM          (1 << 1)
-#define UART_PL011_IMSC_RIMIM           (1 << 0)
-#define UART_RD_REG(base, offset)				(HI_REG_RD(base+offset))
-#define UART_WR_REG(base, offset, val)		(HI_REG_WR(base+offset, val))
-
-/*************************I2C****************************************/
-#define I2C_REG_BASE		0x200D0000
-#define I2C_CTRL_REG		0x000
-#define I2C_COM_REG			0x004
-#define I2C_ICR_REG			0x008
-#define I2C_SR_REG			0x00C
-#define I2C_SCL_H_REG		0x010
-#define I2C_SCL_L_REG		0x014
-#define I2C_TXR_REG			0x018
-#define I2C_RXR_REG			0x01C
-
-#define I2C_RD_REG(offset)				(HI_REG_RD(I2C_REG_BASE+offset))
-#define I2C_WR_REG(offset, val)		(HI_REG_WR(I2C_REG_BASE+offset, val))
-
-/*************************CRG****************************************/
-#define CRG_REG_BASE		0x20030000
-#define CRG_VICAP_CLK		0x002C
-#define CRG_SENSOR_CLK	0x0030
-
-#define CRG_RD_REG(offset)			(HI_REG_RD(CRG_REG_BASE+offset))
-#define CRG_WR_REG(offset, val)		(HI_REG_WR(CRG_REG_BASE+offset, val))
-
-/*************************VICAP****************************************/
-#define VICAP_REG_BASE			0x20580000
-#define VICAP_WK_MODE			0x0000
-#define VICAP_AXI_CFG			0x0010
-#define VICAP_PT_SEL			0x0020
-#define VICAP_CH_SEL			0x0030
-#define VICAP_APB_TIMEOUT 	0x00E0
-#define VICAP_INT_STA			0x00F0
-#define VICAP_INT_MASK			0x00F8
-#define VICAP_PT_INTF_MOD		0x0100
-#define VICAP_PT_OFFSET0		0x0110
-#define VICAP_PT_OFFSET1		0x0114
-#define VICAP_PT_OFFSET2		0x0118
-#define VICAP_TIMMING_CFG	0x0130
-#define VICAP_DATA_CFG			0x0140
-#define VICAP_PT_HFB			0x0180
-#define VICAP_PT_HACT			0x0184
-#define VICAP_PT_HBB			0x0188
-#define VICAP_PT_VFB			0x018C
-#define VICAP_PT_VACT			0x0190
-#define VICAP_PT_VBB			0x0194
-#define VICAP_PT_VBFB			0x0198
-#define VICAP_PT_VBACT			0x019C
-#define VICAP_PT_VBBB			0x01A0
-#define VICAP_PT_STA			0x01E0
-#define VICAP_PT_SIZE			0x01EC
-#define VICAP_PT_INT_STA		0x01F0
-#define VICAP_PT_INT_MASK		0x01F8
-#define VICAP_CH_CTRL			0x1000
-#define VICAP_CH_REG_NEW		0x1004
-#define VICAP_CH_ADAPTER_CFG 	0x1010
-#define VICAP_CH_PACK_Y_CFG	0x1080
-#define VICAP_CH_PACK_Y_WIDTH	0x1084
-#define VICAP_CH_PACK_C_WIDTH	0x1094
-#define VICAP_CH_DES_Y_CFG		0x10B0
-#define VICAP_CH_DES_Y_FADDR	0x10B4
-#define VICAP_CH_DES_Y_SIZE		0x10B8
-#define VICAP_CH_DES_Y_STRIDE	0x10BC
-#define VICAP_CH_DES_C_CFG		0x10C0
-#define VICAP_CH_DES_C_FADDR	0x10C4
-#define VICAP_CH_DES_C_SIZE		0x10C8
-#define VICAP_CH_DES_C_STRIDE	0x10CC
-#define VICAP_CH_INT_STA		0x10F0
-#define VICAP_CH_INT_MASK		0x10F8
-#define VICAP_CH_CROP_CFG		0x1100
-#define VICAP_CH_CROP_WIN		0x1104
-#define VICAP_CROP0_START		0x1110
-#define VICAP_CROP0_SIZE		0x1114
-
-#define VICAP_RD_REG(offset)				(HI_REG_RD(VICAP_REG_BASE+offset))
-#define VICAP_WR_REG(offset, val)		(HI_REG_WR(VICAP_REG_BASE+offset, val))
-
-#define PT_EN			(1<<31)
-#define CH_EN			(1<<31)
-#define ISP_INT_EN		(1<<24)
-#define PT0_INT_EN		(1<<16)
-#define CH0_INT_EN		(1<<0)
-#define FIELD_THROW_EN  (1<<3)
-#define BUF_OVF_EN		(1<<2)
-#define CC_INT_EN		(1<<1)
-#define FSTART_EN		(1<<0)
-
-#define CFG_VICAP_IRQEN			(1<<22)
-
-/*************************GPIO****************************************/
+/* I2C */
+#define I2C_REG_BASE					0x200D0000
+/* Vicap */
+#define VI_REG_BASE					0x20580000
+/* GPIO */
+#define GPIO0_REG_BASE			0x20140000
+#define GPIO1_REG_BASE			0x20150000
+#define GPIO2_REG_BASE			0x20160000
+#define GPIO3_REG_BASE			0x20170000
+#define GPIO4_REG_BASE			0x20180000
+#define GPIO5_REG_BASE			0x20190000
+#define GPIO6_REG_BASE			0x201A0000
+#define GPIO7_REG_BASE			0x201B0000
+#define GPIO8_REG_BASE			0x201C0000
 #define GPIO9_REG_BASE			0x201D0000
-#define GPIO_0_DATA				0x004
-#define GPIO_1_DATA				0x008
-#define GPIO_2_DATA				0x010
-#define GPIO_3_DATA				0x020
-#define GPIO_4_DATA				0x040
-#define GPIO_5_DATA				0x080
-#define GPIO_6_DATA				0x100
-#define GPIO_7_DATA				0x200
+#define GPIO10_REG_BASE		0x201E0000
+#define GPIO11_REG_BASE		0x201F0000
+/*************************End Base Address************************************/
 
-#define GPIO_DIR				0x400
-#define GPIO_IS					0x404
-#define GPIO_IBE				0x408
-#define GPIO_IEV				0x40C
-#define GPIO_IE					0x410
-#define GPIO_RIS				0x414
-#define GPIO_MIS				0x418
-#define GPIO_IC					0x41C
+/*************************Reg Structure****************************************/
+/* PinMux */
+typedef struct{
+	volatile uint32_t res0[2];		/* 0x000~0x004 */
+	volatile uint32_t sns_clk;		/* 0x008 */
+	volatile uint32_t res1[3];		/* 0x00C~0x014 */
+	volatile uint32_t i2c_sda;		/* 0x018 */
+	volatile uint32_t i2c_scl;		/* 0x01C */
+	volatile uint32_t res2[30];	/* 0x020~0x0C4 */
+	volatile uint32_t gpio9_0;	/* 0x0C8 */
+	volatile uint32_t gpio9_1;	/* 0x0CC */
+	volatile uint32_t gpio9_2;	/* 0x0D0 */
+	volatile uint32_t gpio9_3;	/* 0x0D4 */
+	volatile uint32_t gpio9_4;	/* 0x0D8 */
+	volatile uint32_t gpio9_5;	/* 0x0DC */
+	volatile uint32_t gpio9_6;	/* 0x0E0 */
+	volatile uint32_t gpio9_7;	/* 0x0E4 */
+	volatile uint32_t res3[8];		/* 0x0E8~0x104 */
+	volatile uint32_t uart2_rxd;	/* 0x108 */
+	volatile uint32_t uart2_txd; /* 0x10C */
+	volatile uint32_t res4[12];	/* 0x110~0x13C */
+	volatile uint32_t vi_clk;		/* 0x140 */
+	volatile uint32_t vi_vs;			/* 0x144 */
+	volatile uint32_t vi_hs;			/* 0x148 */
+	volatile uint32_t vi_dat11;	/* 0x14C */
+	volatile uint32_t vi_dat10;	/* 0x150 */
+	volatile uint32_t vi_dat9;		/* 0x154 */
+	volatile uint32_t vi_dat8;		/* 0x158 */
+	volatile uint32_t vi_dat7;		/* 0x15C */
+	volatile uint32_t vi_dat6;		/* 0x160 */
+	volatile uint32_t vi_dat5;		/* 0x164 */
+	volatile uint32_t vi_dat4;		/* 0x168 */
+	volatile uint32_t vi_dat3;		/* 0x16C */
+	volatile uint32_t vi_dat2;		/* 0x170 */
+	volatile uint32_t vi_dat1;		/* 0x174 */
+	volatile uint32_t vi_dat0;		/* 0x178 */
+}hi_pinmux_regs_s;
 
-#define GPIO_RD_REG(offset)				(HI_REG_RD(GPIO9_REG_BASE+offset))
-#define GPIO_WR_REG(offset, val)		(HI_REG_WR(GPIO9_REG_BASE+offset, val))
+/* Interrupt */
+typedef struct{
+	volatile uint32_t irq_status;		/* 0x00 */
+	volatile uint32_t fiq_status;		/* 0x04 */
+	volatile uint32_t raw_int;			/* 0x08 */
+	volatile uint32_t src;				/* 0x0C */
+	volatile uint32_t enable;			/* 0x10 */
+	volatile uint32_t en_clr;			/* 0x14 */
+	volatile uint32_t softint;			/* 0x18 */
+	volatile uint32_t softclr;			/* 0x1C */
+	volatile uint32_t protect;			/* 0x20 */
+}hi_irq_regs_s;
 
-#define CFG_GPIO0_IRQEN				(1<<29)
-#define CFG_GPIO3_IRQEN				(1<<30)
-#define CFG_GPIO6_IRQEN				(1<<31)
+/* Timer */
+typedef struct{							/*  T0/T2 - T1/T3 */
+	 volatile uint32_t load;			/* 0x00 - 0x20 */
+	 volatile uint32_t value;		/* 0x04 - 0x24 */
+	 volatile uint32_t ctrl;			/* 0x08 - 0x28 */
+	 volatile uint32_t icr;			/* 0x0C - 0x2C */
+	 volatile uint32_t ris;			/* 0x10 - 0x30 */
+	 volatile uint32_t mis;			/* 0x14 - 0x34 */
+	 volatile uint32_t bgload;		/* 0x18 - 0x38 */
+}hi_timer_regs_s;
+
+/* UART */
+typedef struct {
+    volatile uint32_t dr;				/* 0x00 */
+	volatile uint32_t rsr;			/* 0x04 */
+	volatile uint32_t res0[4];		/* 0x08~0x14 */
+	volatile uint32_t fr;				/* 0x18 */
+	volatile uint32_t res1[2];		/* 0x1C~0x20 */
+	volatile uint32_t ibrd;			/* 0x24 */
+	volatile uint32_t fbrd;			/* 0x28 */
+	volatile uint32_t lcr_h;			/* 0x2C */
+	volatile uint32_t cr;				/* 0x30 */
+	volatile uint32_t ifls;			/* 0x34 */
+	volatile uint32_t imsc;			/* 0x38 */
+	volatile uint32_t ris;				/* 0x3C */
+	volatile uint32_t mis;			/* 0x40 */
+	volatile uint32_t icr;				/* 0x44 */
+	volatile uint32_t dmacr;		/* 0x48 */
+} hi_uart_regs_s;
+ 
+/* I2C */
+typedef struct{
+	volatile uint32_t ctrl;			/* 0x00 */
+	volatile uint32_t com;			/* 0x04 */
+	volatile uint32_t icr;				/* 0x08 */
+	volatile uint32_t sr;				/* 0x0C */
+	volatile uint32_t scl_h;			/* 0x10 */
+	volatile uint32_t scl_l;			/* 0x14 */
+	volatile uint32_t txr;			/* 0x18 */
+	volatile uint32_t rxr;			/* 0x1C */
+}hi_i2c_regs_s;
+
+/* VI */
+typedef struct{
+	volatile uint32_t lowpower;		/* 0x0000 */
+	volatile uint32_t res0[3];			/* 0x0004~0x000C */
+	volatile uint32_t axi;				/* 0x0010 */
+	volatile uint32_t res1[3];			/* 0x0014~0x001C */
+	volatile uint32_t pt_sel;			/* 0x0020 */
+	volatile uint32_t res2[3];			/* 0x0024~0x002C */
+	volatile uint32_t ch_sel;			/* 0x0030 */
+	volatile uint32_t res3[43];		/* 0x0034~0x00DC */
+	volatile uint32_t apb;				/* 0x00E0 */
+	volatile uint32_t res4[3];			/* 0x00E4~0x00EC */
+	volatile uint32_t g_int;				/* 0x00F0 */
+	volatile uint32_t res5;				/* 0x00F4 */
+	volatile uint32_t g_int_en;		/* 0x00F8 */
+	volatile uint32_t res6;				/* 0x00FC */
+	volatile uint32_t pt_mode;		/* 0x0100 */
+	volatile uint32_t res7[3];			/* 0x0104~0x010C */
+	volatile uint32_t pt_offset0;	/* 0x0110 */
+	volatile uint32_t pt_offset1;	/* 0x0114 */
+	volatile uint32_t pt_offset2;	/* 0x0118 */
+	volatile uint32_t res8[5];			/* 0x011C~0x012C*/
+	volatile uint32_t timing_cfg;	/* 0x0130 */
+	volatile uint32_t res9[3];			/* 0x0134~0x013C */
+	volatile uint32_t data_cfg;		/* 0x0140 */
+	volatile uint32_t res10[15];		/* 0x0144~0x017C */
+	volatile uint32_t hfb;				/* 0x0180 */
+	volatile uint32_t hact;				/* 0x0184 */
+	volatile uint32_t hbb;				/* 0x0188 */
+	volatile uint32_t vfb;				/* 0x018C */
+	volatile uint32_t vact;				/* 0x0190 */
+	volatile uint32_t vbb;				/* 0x0194 */
+	volatile uint32_t vbfb;				/* 0x0198 */
+	volatile uint32_t vbact;			/* 0x019C */
+	volatile uint32_t vbbb;				/* 0x01A0 */
+	volatile uint32_t res11[15];		/* 0x01A4~0x01DC */
+	volatile uint32_t pt_status;		/* 0x01E0 */
+	volatile uint32_t res12;			/* 0x01E4 */
+	volatile uint32_t pt_size;			/* 0x01E8 */
+	volatile uint32_t res13;			/* 0x01EC */
+	volatile uint32_t pt_int;			/* 0x01F0 */
+	volatile uint32_t res14;			/* 0x01F4 */
+	volatile uint32_t pt_int_en;		/* 0x01F8 */
+	volatile uint32_t res15[897];	/* 0x01FC~0x0FFC */
+	volatile uint32_t ch_ctrl;			/* 0x1000 */
+	volatile uint32_t new;				/* 0x1004 */
+	volatile uint32_t res16[2];		/* 0x1008~0x100C */
+	volatile uint32_t adapter;		/* 0x1010 */
+	volatile uint32_t res17[27];		/* 0x1014~0x107C */
+	volatile uint32_t pack_y;			/* 0x1080 */
+	volatile uint32_t pack_y_width;	/* 0x1084 */
+	volatile uint32_t res18[2];		/* 0x1088~0x108C */
+	volatile uint32_t pack_c;			/* 0x1090 */
+	volatile uint32_t pack_c_width;	/* 0x1094 */
+	volatile uint32_t res19[6];		/* 0x1098~0x10AC */
+	volatile uint32_t des_y;			/* 0x10B0 */
+	volatile uint32_t des_y_addr;	/* 0x10B4 */
+	volatile uint32_t des_y_size;	/* 0x10B8 */
+	volatile uint32_t des_y_stride;	/* 0x10BC */
+	volatile uint32_t des_c;			/* 0x10C0 */
+	volatile uint32_t des_c_addr;	/* 0x10C4 */
+	volatile uint32_t des_c_size;	/* 0x10C8 */
+	volatile uint32_t des_c_stride;	/* 0x10CC */
+	volatile uint32_t res20[8];		/* 0x10D0~0x10EC */
+	volatile uint32_t ch_int;			/* 0x10F0 */
+	volatile uint32_t res21;			/* 0x10F4 */
+	volatile uint32_t ch_int_en;		/* 0x10F8 */
+	volatile uint32_t res22;			/* 0x10FC */
+	volatile uint32_t crop_cfg;		/* 0x1100 */
+	volatile uint32_t crop_win;		/* 0x1104 */
+	volatile uint32_t res23[2];		/* 0x1108~0x110C */
+	volatile uint32_t crop_start;	/* 0x1110 */
+	volatile uint32_t crop_size;		/* 0x1114 */
+}hi_vi_regs_s;
+
+typedef struct{
+	volatile uint32_t res0;			/* 0x000 */
+	volatile uint32_t data0;		/* 0x004 */
+	volatile uint32_t data1;		/* 0x008 */
+	volatile uint32_t res1;			/* 0x00C */
+	volatile uint32_t data2;		/* 0x010 */
+	volatile uint32_t res2[3];		/* 0x014~0x01C */
+	volatile uint32_t data3;		/* 0x020 */
+	volatile uint32_t res3[7];		/* 0x24~0x3C */
+	volatile uint32_t data4;		/* 0x040 */
+	volatile uint32_t res4[15];	/* 0x044~0x07C */
+	volatile uint32_t data5;		/* 0x080 */
+	volatile uint32_t res5[31];	/* 0x084~0x0FC */
+	volatile uint32_t data6;		/* 0x100 */
+	volatile uint32_t res6[63];	/* 0x104~0x1FC */
+	volatile uint32_t data7;		/* 0x200 */
+	volatile uint32_t res7[127];	/* 0x204~0x3FC */
+	volatile uint32_t dir;				/* 0x400 */
+	volatile uint32_t is;				/* 0x404 */
+	volatile uint32_t ibe;			/* 0x408 */
+	volatile uint32_t iev;				/* 0x40C */
+	volatile uint32_t ie;				/* 0x410 */
+	volatile uint32_t ris;				/* 0x414 */
+	volatile uint32_t mis;			/* 0x418 */
+	volatile uint32_t ic;				/* 0x41C */
+}hi_gpio_regs_s;
+
+/*************************End Reg Structure****************************************/
 
 #endif /* __HI_CHIP_REGS_H__ */
