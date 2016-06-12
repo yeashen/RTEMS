@@ -190,7 +190,7 @@ int hi_i2c_read(int minor, i2c_para_s *i2c_para)
 	}
 
 	/* send readdev address */
-	i2c_data[minor].regs->txr = dev_addr & READ_OPERATION;
+	i2c_data[minor].regs->txr = dev_addr | READ_OPERATION;
 	i2c_data[minor].regs->com = I2C_WRITE | I2C_START;
 	ret = hi_i2c_wait_writeend(minor);
 	if(ret < 0)

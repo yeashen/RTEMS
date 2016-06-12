@@ -45,7 +45,11 @@
 #define CRG_VICAP_CLK				0x002C
 #define CRG_SENSOR_CLK			0x0030
 
+#define SCPER_LOCK					(0x1ACCE551)
+
 /*************************Base Address****************************************/
+/* System */
+#define SYSCTRL_REG_BASE			0x20050000
 /* PinMux */
 #define PINMUX_REG_BASE			0x200F0000
 /* Interrupt */
@@ -77,14 +81,28 @@
 /*************************End Base Address************************************/
 
 /*************************Reg Structure****************************************/
-/* PinMux */
+/* System @0x20050000 */
+typedef struct{
+	volatile uint32_t sc_ctrl;		/* 0x000 */
+	volatile uint32_t sc_reset;	/* 0x004 */
+	volatile uint32_t int_ctrl;		/* 0x008 */
+	volatile uint32_t int_stat;	/* 0x00C */
+	volatile uint32_t xtal_ctrl;	/* 0x010 */
+	volatile uint32_t pll_ctrl;		/* 0x014 */
+	volatile uint32_t res0[11];	/* 0x018~0x040 */
+	volatile uint32_t sc_lock;		/* 0x044 */
+}hi_sysctrl_regs_s;
+
+/* PinMux @0x200F0000 */
 typedef struct{
 	volatile uint32_t res0[2];		/* 0x000~0x004 */
 	volatile uint32_t sns_clk;		/* 0x008 */
-	volatile uint32_t res1[3];		/* 0x00C~0x014 */
+	volatile uint32_t spi0_sck;	/* 0x00C */
+	volatile uint32_t spi0_sdo;	/* 0x010 */
+	volatile uint32_t spi0_sdi;	/* 0x014 */
 	volatile uint32_t i2c_sda;		/* 0x018 */
 	volatile uint32_t i2c_scl;		/* 0x01C */
-	volatile uint32_t res2[30];	/* 0x020~0x0C4 */
+	volatile uint32_t res2[42];	/* 0x020~0x0C4 */
 	volatile uint32_t gpio9_0;	/* 0x0C8 */
 	volatile uint32_t gpio9_1;	/* 0x0CC */
 	volatile uint32_t gpio9_2;	/* 0x0D0 */
@@ -96,7 +114,10 @@ typedef struct{
 	volatile uint32_t res3[8];		/* 0x0E8~0x104 */
 	volatile uint32_t uart2_rxd;	/* 0x108 */
 	volatile uint32_t uart2_txd; /* 0x10C */
-	volatile uint32_t res4[12];	/* 0x110~0x13C */
+	volatile uint32_t res4[9];		/* 0x110~0x130 */
+	volatile uint32_t gpio0_5;	/* 0x134 */
+	volatile uint32_t gpio0_6;	/* 0x138 */
+	volatile uint32_t gpio0_7;	/* 0x13C */
 	volatile uint32_t vi_clk;		/* 0x140 */
 	volatile uint32_t vi_vs;			/* 0x144 */
 	volatile uint32_t vi_hs;			/* 0x148 */
@@ -114,7 +135,7 @@ typedef struct{
 	volatile uint32_t vi_dat0;		/* 0x178 */
 }hi_pinmux_regs_s;
 
-/* Interrupt */
+/* Interrupt @0x10140000 */
 typedef struct{
 	volatile uint32_t irq_status;		/* 0x00 */
 	volatile uint32_t fiq_status;		/* 0x04 */
@@ -127,7 +148,7 @@ typedef struct{
 	volatile uint32_t protect;			/* 0x20 */
 }hi_irq_regs_s;
 
-/* Timer */
+/* Timer @0x20000000/0x20010000 */
 typedef struct{							/*  T0/T2 - T1/T3 */
 	 volatile uint32_t load;			/* 0x00 - 0x20 */
 	 volatile uint32_t value;		/* 0x04 - 0x24 */
@@ -138,7 +159,7 @@ typedef struct{							/*  T0/T2 - T1/T3 */
 	 volatile uint32_t bgload;		/* 0x18 - 0x38 */
 }hi_timer_regs_s;
 
-/* UART */
+/* UART @0x20080000 */
 typedef struct {
     volatile uint32_t dr;				/* 0x00 */
 	volatile uint32_t rsr;			/* 0x04 */
@@ -157,7 +178,7 @@ typedef struct {
 	volatile uint32_t dmacr;		/* 0x48 */
 } hi_uart_regs_s;
  
-/* I2C */
+/* I2C @0x200D0000 */
 typedef struct{
 	volatile uint32_t ctrl;			/* 0x00 */
 	volatile uint32_t com;			/* 0x04 */
@@ -169,7 +190,7 @@ typedef struct{
 	volatile uint32_t rxr;			/* 0x1C */
 }hi_i2c_regs_s;
 
-/* VI */
+/* VI @0x20580000 */
 typedef struct{
 	volatile uint32_t lowpower;		/* 0x0000 */
 	volatile uint32_t res0[3];			/* 0x0004~0x000C */
@@ -244,6 +265,7 @@ typedef struct{
 	volatile uint32_t crop_size;		/* 0x1114 */
 }hi_vi_regs_s;
 
+/* GPIO@0x201D0000 */
 typedef struct{
 	volatile uint32_t res0;			/* 0x000 */
 	volatile uint32_t data0;		/* 0x004 */

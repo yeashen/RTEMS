@@ -27,10 +27,8 @@
 
 
 static SENSOR_DATA_S poa030r_init_para_640_480[] = {
-};
-
-/* debug */
-static SENSOR_DATA_S poa030r_init_para_640_480_colorbar[] = {
+	{0x03, 0x00}, {0x67, 0x01},
+	{0x03, 0x01}, {0x0B, 0x01}, {0x4E, 0x13}, {0x54, 0x88},
 };
 
 static int i2c_minor = 0;
@@ -39,7 +37,6 @@ static int i2c_minor = 0;
 static int poa030r_download_firmware(SENSOR_DATA_S *pModeSetting, int ArySize)
 {
 	int i, ret;
-	uint32_t reg_addr, val;
 	i2c_para_s i2c_para;
 
 	i2c_para.dev_addr = SENSOR_I2C_ADDR;
@@ -51,10 +48,9 @@ static int poa030r_download_firmware(SENSOR_DATA_S *pModeSetting, int ArySize)
 		i2c_para.data = pModeSetting->data;
 		ret = hi_i2c_write(i2c_minor, &i2c_para);
 		if(ret < 0){
-			printk("i2c write addr=0x%x val=0x%x error!\n", reg_addr, val);
+			printk("i2c write addr=0x%x val=0x%x error!\n", i2c_para.reg_addr, i2c_para.data);
 			return ret;
 		}
-		//usleep(100);
 	}
 
 	return ret;
@@ -65,16 +61,12 @@ int sensor_poa030r_init(SENSOR_RES_E mode)
 	SENSOR_DATA_S *pModeSetting = NULL;
 	int ArySize = 0, ret = 0;
 
-	hi_i2c_init(0);
+	hi_i2c_init(i2c_minor);
 
 	switch(mode){
 		case MODE_640x480:
 			pModeSetting = poa030r_init_para_640_480;
 			ArySize = ARRAY_SIZE(poa030r_init_para_640_480);
-			break;
-		case MODE_640x480_COLORBAR:
-			pModeSetting = poa030r_init_para_640_480_colorbar;
-			ArySize = ARRAY_SIZE(poa030r_init_para_640_480_colorbar);
 			break;
 		default:
 			printk("invalid sensor mode, please check again!\n");

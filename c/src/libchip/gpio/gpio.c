@@ -31,19 +31,19 @@ static rtems_isr gpio_isr(rtems_vector_number vector)
 	}
 }
 
-void gpio_set_derection(GPIO_PIN_NUM pin, GPIO_DIRECTION dir)
+void gpio_set_derection(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin, GPIO_DIRECTION dir)
 {
-	hi_gpio_set_derection(pin, dir);
+	hi_gpio_set_derection(group, pin, dir);
 }
 
-unsigned int gpio_get(GPIO_PIN_NUM pin)
+unsigned int gpio_get(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin)
 {
-	return hi_gpio_get(pin);
+	return hi_gpio_get(group, pin);
 }
 
-void gpio_set(GPIO_PIN_NUM pin, unsigned int val)
+void gpio_set(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin, unsigned int val)
 {
-	hi_gpio_set(pin, val);
+	hi_gpio_set(group, pin, val);
 }
 
 void gpio_init(GPIO_INT_PATA *para)

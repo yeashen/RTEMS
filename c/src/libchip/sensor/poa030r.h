@@ -19,7 +19,6 @@ typedef struct
 typedef enum
 {
 	MODE_640x480 = 0,
-	MODE_640x480_COLORBAR,
 }SENSOR_RES_E;
 
 int sensor_poa030r_init(SENSOR_RES_E mode);

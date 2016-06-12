@@ -1,6 +1,8 @@
 #ifndef _I2C_H
 #define _I2C_H
 
+#include <rtems.h>
+
 #define I2C_WAIT_TIME_OUT       0x1000 
 #define CFG_I2C_IRQEN				(1<<20)
 

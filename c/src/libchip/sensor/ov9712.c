@@ -129,9 +129,8 @@ int sensor_ov9712_read(SENSOR_DATA_S *sensor_data)
 	i2c_para.reg_addr = sensor_data->reg_addr;
 	i2c_para.reg_byte = 1;
 	i2c_para.data_byte = 1;
-	hi_i2c_read(i2c_minor, &i2c_para);
-
-	return i2c_para.data;
+	
+	return hi_i2c_read(i2c_minor, &i2c_para);
 }
 
 int sensor_ov9712_write(SENSOR_DATA_S *sensor_data)

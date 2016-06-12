@@ -11,6 +11,11 @@
 #define CC_INT_EN		(1<<1)
 #define FSTART_EN		(1<<0)
 
+typedef enum{
+	SENSOR_OV9712,
+	SENSOR_POA030R,
+}sensor_type_e;
+
 void vicap_set_y_faddr(unsigned int addr);
 
 void vicap_set_y_width(unsigned int width);
@@ -52,9 +57,9 @@ unsigned int vicap_get_pt_height();
 
 unsigned int vicap_get_pt_width();
 
-void vicap_pin_init();
+void vicap_pin_init(sensor_type_e sns_type);
 
-void vicap_reg_init(void);
+void vicap_reg_init(sensor_type_e sns_type);
 
 
 #endif /* _VICAP_DRV_H */

@@ -1,11 +1,11 @@
 #ifndef _DEBUG_H
 #define _DEBUG_H
 
-static inline void phyreg_write(uint32_t addr, uint32_t val){
+static inline void phyreg_write(unsigned int addr, unsigned int val){
 	*(volatile unsigned int *)(addr) = val;
 }
 
-static inline uint32_t phyreg_read(uint32_t addr){
+static inline unsigned int phyreg_read(unsigned int addr){
 	return *(volatile unsigned int *)(addr);
 }
 

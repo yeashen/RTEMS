@@ -22,24 +22,59 @@
 static hi_pinmux_regs_s *hi_pinmux_reg = NULL;
 static hi_gpio_regs_s *gpio_reg = NULL;
 
-void hi_gpio_set_derection(GPIO_PIN_NUM pin, GPIO_DIRECTION dir)
+static unsigned int gpio_reg_base[12] = {
+	GPIO0_REG_BASE, GPIO1_REG_BASE, GPIO2_REG_BASE, GPIO3_REG_BASE, GPIO4_REG_BASE, GPIO5_REG_BASE,
+	GPIO6_REG_BASE, GPIO7_REG_BASE, GPIO8_REG_BASE, GPIO9_REG_BASE, GPIO10_REG_BASE, GPIO11_REG_BASE,
+};
+
+void hi_gpio_set_derection(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin, GPIO_DIRECTION dir)
 {
 	hi_pinmux_reg = (hi_pinmux_regs_s *)PINMUX_REG_BASE;
-	gpio_reg = (hi_gpio_regs_s *)GPIO9_REG_BASE;
+	gpio_reg = (hi_gpio_regs_s *)gpio_reg_base[group];
 	unsigned int val = gpio_reg->dir;
 
-	hi_pinmux_reg->gpio9_1 = 0x1;
+	if(group == GPIO9){
+		switch(pin){
+			case GPIO_PIN0:
+				hi_pinmux_reg->gpio9_0 = 0x1;
+				break;
+			case GPIO_PIN1:
+				hi_pinmux_reg->gpio9_1 = 0x1;
+				break;
+			case GPIO_PIN2:
+				hi_pinmux_reg->gpio9_2 = 0x1;
+				break;
+			case GPIO_PIN3:
+				hi_pinmux_reg->gpio9_3 = 0x1;
+				break;
+			case GPIO_PIN4:
+				hi_pinmux_reg->gpio9_4 = 0x1;
+				break;
+			case GPIO_PIN5:
+				hi_pinmux_reg->gpio9_5 = 0x1;
+				break;
+			case GPIO_PIN6:
+				hi_pinmux_reg->gpio9_6 = 0x1;
+				break;
+			case GPIO_PIN7:
+				hi_pinmux_reg->gpio9_7 = 0x1;
+				break;
+			default:
+				break;
+		}
+	}
 
 	if(dir == GPIO_OUTPUT){
 		gpio_reg->dir = val|(1<<pin);
 	}else{
-		gpio_reg->dir =val&(~(1<<pin));
+		gpio_reg->dir = val&(~(1<<pin));
 	}
 }
 
-unsigned int hi_gpio_get(GPIO_PIN_NUM pin)
+unsigned int hi_gpio_get(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin)
 {
 	unsigned int value = 0;
+	gpio_reg = (hi_gpio_regs_s *)gpio_reg_base[group];
 
 	switch(pin){
 		case GPIO_PIN0:
@@ -73,9 +108,10 @@ unsigned int hi_gpio_get(GPIO_PIN_NUM pin)
 	return value;
 }
 
-void hi_gpio_set(GPIO_PIN_NUM pin, unsigned int val)
+void hi_gpio_set(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin, unsigned int val)
 {
-	unsigned int value = (val==0)?0:1;
+	unsigned int value = (val==0)?0:(1<<pin);	
+	gpio_reg = (hi_gpio_regs_s *)gpio_reg_base[group];
 
 	switch(pin){
 		case GPIO_PIN0:

@@ -7,6 +7,22 @@
 
 typedef enum
 {
+	GPIO0 = 0,
+	GPIO1,
+	GPIO2,
+	GPIO3,
+	GPIO4,
+	GPIO5,
+	GPIO6,
+	GPIO7,
+	GPIO8,
+	GPIO9,
+	GPIO10,
+	GPIO11,
+}GPIO_GROUP_NUM;
+
+typedef enum
+{
 	GPIO_PIN0 = 0,
 	GPIO_PIN1,
 	GPIO_PIN2,
@@ -63,9 +79,9 @@ typedef struct
 	GPIO_EDGE_TYPE edge_type;
 }GPIO_INT_PATA;
 
-void hi_gpio_set_derection(GPIO_PIN_NUM pin, GPIO_DIRECTION dir);
-unsigned int hi_gpio_get(GPIO_PIN_NUM pin);
-void hi_gpio_set(GPIO_PIN_NUM pin, unsigned int val);
+void hi_gpio_set_derection(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin, GPIO_DIRECTION dir);
+unsigned int hi_gpio_get(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin);
+void hi_gpio_set(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin, unsigned int val);
 void hi_gpio_int_config(GPIO_INT_PATA *para);
 unsigned int hi_gpio_int_query();
 void hi_gpio_int_clear(GPIO_PIN_NUM pin);

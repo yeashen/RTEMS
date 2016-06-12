@@ -156,7 +156,7 @@ void vicap_clear_ch_int(unsigned int int_mask)
 	vi_reg->ch_int = int_mask;
 }
 
-void vicap_pin_init()
+void vicap_pin_init(sensor_type_e sns_type)
 {
 	pinmux_reg =  (hi_pinmux_regs_s *)PINMUX_REG_BASE;
 	irq_reg = (hi_irq_regs_s *)IRQ_REG_BASE;
@@ -167,30 +167,54 @@ void vicap_pin_init()
 	pinmux_reg->vi_clk = 0x0;
 	pinmux_reg->vi_vs = 0x0;
 	pinmux_reg->vi_hs = 0x0;
-	pinmux_reg->vi_dat11 = 0x0;
-	pinmux_reg->vi_dat10 = 0x0;
-	pinmux_reg->vi_dat9 = 0x0;
-	pinmux_reg->vi_dat8 = 0x0;
-	pinmux_reg->vi_dat7 = 0x0;
-	pinmux_reg->vi_dat6 = 0x0;
-	pinmux_reg->vi_dat5 = 0x0;
-	pinmux_reg->vi_dat4 = 0x0;
-	pinmux_reg->vi_dat3 = 0x0;
-	pinmux_reg->vi_dat2 = 0x0;
-	pinmux_reg->vi_dat1 = 0x0;
-	pinmux_reg->vi_dat0 = 0x0;
+	if(sns_type == SENSOR_OV9712){
+		pinmux_reg->vi_dat11 = 0x0;
+		pinmux_reg->vi_dat10 = 0x0;
+		pinmux_reg->vi_dat9 = 0x0;
+		pinmux_reg->vi_dat8 = 0x0;
+		pinmux_reg->vi_dat7 = 0x0;
+		pinmux_reg->vi_dat6 = 0x0;
+		pinmux_reg->vi_dat5 = 0x0;
+		pinmux_reg->vi_dat4 = 0x0;
+		pinmux_reg->vi_dat3 = 0x0;
+		pinmux_reg->vi_dat2 = 0x0;
+		pinmux_reg->vi_dat1 = 0x0;
+		pinmux_reg->vi_dat0 = 0x0;
+	}
+	else if(sns_type == SENSOR_POA030R){
+		pinmux_reg->vi_dat8 = 0x0;
+		pinmux_reg->vi_dat7 = 0x0;
+		pinmux_reg->vi_dat6 = 0x0;
+		pinmux_reg->vi_dat5 = 0x0;
+		pinmux_reg->vi_dat4 = 0x0;
+		pinmux_reg->vi_dat3 = 0x0;
+		pinmux_reg->vi_dat2 = 0x0;
+		pinmux_reg->vi_dat1 = 0x0;
+		pinmux_reg->vi_dat0 = 0x0;
+
+		/* special pin */
+		pinmux_reg->spi0_sdi = 0x0;
+		pinmux_reg->gpio0_7 = 0x1;
+	}
 }
 
-void vicap_reg_init(void)
+void vicap_reg_init(sensor_type_e sns_type)
 {
 	vi_reg = (hi_vi_regs_s *)VI_REG_BASE;
 
 	/* relation reg config start*/
 	vi_reg->lowpower = 0x1;
 	vi_reg->apb = 0x80000100;
-	vi_reg->pt_offset0 = 0xFFC00000;
-	vi_reg->pt_offset1 = 0xFFF00010;
-	vi_reg->pt_offset2 = 0xFFF00020;
+	if(sns_type == SENSOR_OV9712){
+		vi_reg->pt_offset0 = 0xFFC00000;
+		vi_reg->pt_offset1 = 0xFFF00010;
+		vi_reg->pt_offset2 = 0xFFF00020;
+	}
+	else if(sns_type == SENSOR_POA030R){
+		vi_reg->pt_offset0 = 0x1FF00000;
+		vi_reg->pt_offset1 = 0xFFF00010;
+		vi_reg->pt_offset2 = 0xFFF00020;
+	}
 	vi_reg->timing_cfg = 0x82001;
 	vi_reg->data_cfg = 0x4;
 	vi_reg->hfb = 0x198;

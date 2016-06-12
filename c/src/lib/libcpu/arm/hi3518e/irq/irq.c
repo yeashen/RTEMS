@@ -38,7 +38,7 @@ void bsp_interrupt_dispatch(void)
 			break;
 		default : 
 			printk("vector=0x%x\n", regval);
-			vector = BSP_MAX_INT; 
+			vector = BSP_INT_TIMER0_1; 
 			break;		
 	}
 

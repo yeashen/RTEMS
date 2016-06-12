@@ -3,6 +3,7 @@
 
 #include <rtems.h>
 #include <rtems/libi2c.h>
+#include <vicap_drv.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,7 +39,7 @@ typedef enum
 
 int video_capture_open(void);
 
-void video_capture_init(VICAP_PARA_S *vicap_para);
+void video_capture_init(sensor_type_e sns_type, VICAP_PARA_S *vicap_para);
 
 int video_capture_ioctl(VICAP_CTRL_CMD cmd);
 

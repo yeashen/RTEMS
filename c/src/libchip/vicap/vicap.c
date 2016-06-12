@@ -65,10 +65,10 @@ int video_capture_open()
 	return 0;
 }
 	
-void video_capture_init(VICAP_PARA_S *vicap_para)
+void video_capture_init(sensor_type_e sns_type, VICAP_PARA_S *vicap_para)
 {
-	vicap_pin_init();
-	vicap_reg_init();
+	vicap_pin_init(sns_type);
+	vicap_reg_init(sns_type);
 
 	vicap_set_y_faddr(vicap_para->stDesY.addr);
 	vicap_set_y_width(vicap_para->stDesY.width*16/128-1);

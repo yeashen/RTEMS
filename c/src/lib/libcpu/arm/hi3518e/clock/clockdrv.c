@@ -40,6 +40,7 @@ static void clock_isr_off(const rtems_irq_connect_data *unused);
 static int clock_isr_is_on(const rtems_irq_connect_data *irq);
 
 static hi_timer_regs_s *timer0_reg = (hi_timer_regs_s *)TIMER0_REG_BASE;
+static hi_sysctrl_regs_s *sysctrl_reg = (hi_sysctrl_regs_s *)SYSCTRL_REG_BASE;
 
 rtems_irq_connect_data clock_isr_data = {
 	.name 	= BSP_INT_TIMER0_1,
@@ -86,8 +87,9 @@ rtems_irq_connect_data clock_isr_data = {
 #define Clock_driver_support_initialize_hardware() \
 	do { \
 		/* set clock source busclk */ \
-		HI_REG_WR(REG_BASE_SCTL+REG_SC_CTRL, HI_REG_RD(REG_BASE_SCTL+REG_SC_CTRL) \
-					| (1<<16) | (1<<18) | (1<<20));\
+		sysctrl_reg->sc_lock = SCPER_LOCK; \
+		sysctrl_reg->sc_ctrl = (sysctrl_reg->sc_ctrl |  (1<<16) | (1<<18) | (1<<20)); \
+		sysctrl_reg->sc_lock = 0x0; \
 		timer0_reg->ctrl = 0x0; \
 		timer0_reg->load = BUSCLK_TO_TIMER_RELOAD(CFG_CLK_BUS); \
 		timer0_reg->ctrl = CFG_TIMER_CONTROL;\
