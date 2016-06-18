@@ -100,7 +100,8 @@ void hi_i2c_init(int minor)
 	i2c_set_rate(minor, I2C_DFT_RATE);
 
 	/* sensor clk */
-	HI_REG_WR(CRG_REG_BASE+CRG_SENSOR_CLK, 0x1);//Sensor clock 24 MHz
+	//HI_REG_WR(CRG_REG_BASE+CRG_SENSOR_CLK, 0x1);//Sensor clock 24 MHz
+	HI_REG_WR(CRG_REG_BASE+CRG_SENSOR_CLK, 0x5);//Sensor clock 27 MHz
 
 	i2c_init_flag = 1;
 }

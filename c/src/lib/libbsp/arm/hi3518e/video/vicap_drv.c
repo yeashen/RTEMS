@@ -182,7 +182,6 @@ void vicap_pin_init(sensor_type_e sns_type)
 		pinmux_reg->vi_dat0 = 0x0;
 	}
 	else if(sns_type == SENSOR_POA030R){
-		pinmux_reg->vi_dat8 = 0x0;
 		pinmux_reg->vi_dat7 = 0x0;
 		pinmux_reg->vi_dat6 = 0x0;
 		pinmux_reg->vi_dat5 = 0x0;
@@ -211,16 +210,16 @@ void vicap_reg_init(sensor_type_e sns_type)
 		vi_reg->pt_offset2 = 0xFFF00020;
 	}
 	else if(sns_type == SENSOR_POA030R){
-		vi_reg->pt_offset0 = 0x1FF00000;
+		vi_reg->pt_offset0 = 0xFF000000;
 		vi_reg->pt_offset1 = 0xFFF00010;
-		vi_reg->pt_offset2 = 0xFFF00020;
+		vi_reg->pt_offset2 = 0xFFF00020;		
 	}
 	vi_reg->timing_cfg = 0x82001;
 	vi_reg->data_cfg = 0x4;
-	vi_reg->hfb = 0x198;
+	vi_reg->hfb = 0x0;//0x198;
 	vi_reg->hbb = 0x0;
-	vi_reg->vfb = 0x6;
-	vi_reg->vbb = 0x6;
+	vi_reg->vfb = 0x0;//0x6;
+	vi_reg->vbb = 0x0;//0x6;
 	vi_reg->vbfb = 0x0;
 	vi_reg->vbact = 0x0;
 	vi_reg->vbbb = 0x0;
@@ -237,7 +236,7 @@ void vicap_reg_init(sensor_type_e sns_type)
 
 	/* channel config */
 	vi_reg->ch_sel = 0x0;
-	vi_reg->ch_int_en = FSTART_EN|CC_INT_EN;
+	vi_reg->ch_int_en = CC_INT_EN;
 
 	/* vicap global interrupt config */
 	vi_reg->g_int_en = CH0_INT_EN;

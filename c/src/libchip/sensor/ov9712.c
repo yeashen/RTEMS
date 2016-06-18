@@ -67,8 +67,7 @@ static int i2c_minor = 0;
 /* download ov9712 settings to sensor through i2c */
 static int ov9712_download_firmware(SENSOR_DATA_S *pModeSetting, int ArySize)
 {
-	int i, ret;
-	uint32_t reg_addr, val;
+	int i, ret = 0;
 	i2c_para_s i2c_para;
 
 	i2c_para.dev_addr = SENSOR_I2C_ADDR;
@@ -80,7 +79,7 @@ static int ov9712_download_firmware(SENSOR_DATA_S *pModeSetting, int ArySize)
 		i2c_para.data = pModeSetting->data;
 		ret = hi_i2c_write(i2c_minor, &i2c_para);
 		if(ret < 0){
-			printk("i2c write addr=0x%x val=0x%x error!\n", reg_addr, val);
+			printk("i2c write addr=0x%x val=0x%x error!\n", i2c_para.reg_addr, i2c_para.data);
 			return ret;
 		}
 		//usleep(100);

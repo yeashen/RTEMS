@@ -18,7 +18,10 @@ typedef struct
 
 typedef enum
 {
-	MODE_640x480 = 0,
+	MODE_640x480_30FPS = 0,
+	MODE_640x480_60FPS,
+	MODE_320x240_30FPS,
+	MODE_320x240_60FPS,
 }SENSOR_RES_E;
 
 int sensor_poa030r_init(SENSOR_RES_E mode);

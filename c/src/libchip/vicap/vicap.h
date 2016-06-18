@@ -15,19 +15,30 @@ extern "C" {
 #define CH_CC_INT		(1<<1)
 #define CH_FSTART		(1<<0)
 
-typedef struct
-{
-	unsigned int addr;
-	unsigned int width;
-	unsigned int height;
-	unsigned int stride;
-}DES_INFO;
+#define BUF_NUM		3
 
 typedef struct
 {
-	DES_INFO stDesY; 
-	DES_INFO stDesC; 
-}VICAP_PARA_S;
+	unsigned char w_pos;
+	unsigned char r_pos;
+	unsigned char num;
+	unsigned int addr[BUF_NUM];
+}ring_buffer;
+
+typedef struct
+{
+	unsigned char cur_num;
+	unsigned char valid_num;
+	unsigned char w_pos;
+}buf_info;
+
+typedef struct
+{
+	unsigned int width;
+	unsigned int height;
+	unsigned int yaddr[BUF_NUM];
+	unsigned int caddr;
+}vicap_para_s;
 
 typedef enum
 {
@@ -37,11 +48,11 @@ typedef enum
 	VICAP_BUTT
 }VICAP_CTRL_CMD;
 
-int video_capture_open(void);
+int video_capture_open(rtems_id taskid);
 
-void video_capture_init(sensor_type_e sns_type, VICAP_PARA_S *vicap_para);
+void video_capture_init(sensor_type_e sns_type, vicap_para_s *vicap_para);
 
-int video_capture_ioctl(VICAP_CTRL_CMD cmd);
+int video_capture_ioctl(VICAP_CTRL_CMD cmd, buf_info *b_info);
 
 void video_capture_close(void);
 
