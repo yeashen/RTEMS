@@ -19,8 +19,8 @@
 #include <hi3518e.h>
 #include <gpio_drv.h>
 
-static hi_pinmux_regs_s *hi_pinmux_reg = NULL;
-static hi_gpio_regs_s *gpio_reg = NULL;
+static volatile hi_pinmux_regs_s *hi_pinmux_reg = NULL;
+static volatile hi_gpio_regs_s *gpio_reg = NULL;
 
 static unsigned int gpio_reg_base[12] = {
 	GPIO0_REG_BASE, GPIO1_REG_BASE, GPIO2_REG_BASE, GPIO3_REG_BASE, GPIO4_REG_BASE, GPIO5_REG_BASE,
@@ -32,7 +32,8 @@ void hi_gpio_set_derection(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin, GPIO_DIRECTIO
 	hi_pinmux_reg = (hi_pinmux_regs_s *)PINMUX_REG_BASE;
 	gpio_reg = (hi_gpio_regs_s *)gpio_reg_base[group];
 	unsigned int val = gpio_reg->dir;
-
+	
+#ifdef HI3518EV100
 	if(group == GPIO9){
 		switch(pin){
 			case GPIO_PIN0:
@@ -63,7 +64,9 @@ void hi_gpio_set_derection(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin, GPIO_DIRECTIO
 				break;
 		}
 	}
+#else defined HI3518EV200
 
+#endif
 	if(dir == GPIO_OUTPUT){
 		gpio_reg->dir = val|(1<<pin);
 	}else{

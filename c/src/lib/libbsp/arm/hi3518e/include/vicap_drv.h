@@ -53,9 +53,9 @@ void vicap_reg_newer(void);
 
 void vicap_clear_ch_int(unsigned int int_mask);
 
-unsigned int vicap_get_pt_height();
+unsigned int vicap_get_pt_height(void);
 
-unsigned int vicap_get_pt_width();
+unsigned int vicap_get_pt_width(void);
 
 void vicap_pin_init(sensor_type_e sns_type);
 

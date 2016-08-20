@@ -20,7 +20,7 @@ extern "C" {
 #define UART_PL01x_FR_TMSK              (UART_PL01x_FR_TXFF + UART_PL01x_FR_BUSY)
 
 #define UART_BAUDRATE				115200
-#define UART_PL011_CLOCK			3000000 /* hi3518 use fixed clk 3MHZ */
+
 
 #define UART_PL011_IBRD                 0x24
 #define UART_PL011_FBRD                 0x28

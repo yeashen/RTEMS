@@ -182,7 +182,7 @@ void bsp_interrupt_initialize(void)
   if (sc != RTEMS_SUCCESSFUL) {
     bsp_fatal(BSP_FATAL_INTERRUPT_INITIALIZATION);
   }
-
+  
   bsp_interrupt_set_initialized();
 }
 

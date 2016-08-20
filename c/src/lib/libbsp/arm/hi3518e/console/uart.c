@@ -124,7 +124,7 @@ unsigned long Console_Configuration_Count = RTEMS_ARRAY_SIZE(Console_Configurati
 
 typedef struct {
     int minor;
-    hi_uart_regs_s * regs;
+    volatile hi_uart_regs_s * regs;
     volatile const char *buf;
     volatile int len;
     volatile int idx;
@@ -132,6 +132,7 @@ typedef struct {
 } hi_uart_data_s;
 
 static hi_uart_data_s hi_uart_data[3];
+static int uart_inited_flag = 0;
 
 /*********************************************************************/
 /* Functions called via termios callbacks (i.e. the ones in uart_fns */
@@ -195,6 +196,10 @@ static ssize_t hi_uart_write(int minor, const char *buf, size_t len)
 {
 	int i;
 
+	if(!uart_inited_flag){
+		hi_uart_initialize(minor);
+	}	
+
 	 for (i = 0; i < len; i++){
 		/* Wait until there is space in the FIFO */
 		while(hi_uart_data[minor].regs->fr & UART_PL01x_FR_TXFF);
@@ -225,6 +230,10 @@ static void hi_uart_set_baud(int minor, int baud)
 /* Set up the UART. */
 static void hi_uart_initialize(int minor)
 {
+	if(uart_inited_flag){
+		return;
+	}	
+
 	hi_uart_data[minor].minor = minor;
 	hi_uart_data[minor].buf 	= NULL;
 	hi_uart_data[minor].len 	= 0;
@@ -269,6 +278,8 @@ static void hi_uart_initialize(int minor)
 	 ** Finally, enable the UART
 	 */
 	hi_uart_data[minor].regs->cr = UART_PL011_CR_UARTEN | UART_PL011_CR_TXE | UART_PL011_CR_RXE;
+
+	uart_inited_flag = 1;
 }
 
 

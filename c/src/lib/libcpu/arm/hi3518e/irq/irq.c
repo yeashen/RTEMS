@@ -22,7 +22,7 @@
 
 #include <hi3518e.h>
 
-static hi_irq_regs_s *irq_reg = NULL;
+static volatile hi_irq_regs_s *irq_reg = NULL;
 
 void bsp_interrupt_dispatch(void)
 {

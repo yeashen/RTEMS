@@ -123,12 +123,12 @@ void video_capture_init(sensor_type_e sns_type, vicap_para_s *vicap_para)
 	}
 
 	vicap_set_y_faddr(vicap_para->yaddr[0]);
-	vicap_set_y_width(vicap_para->width*16/128-1);
+	vicap_set_y_width(vicap_para->width);
 	vicap_set_y_height(vicap_para->height-1);
 	vicap_set_y_stride(vicap_para->width*2);
 	vicap_set_pack_y_width(vicap_para->width*16-1);
 	vicap_set_c_faddr(vicap_para->caddr);	
-	vicap_set_c_width(vicap_para->width*16/128-1);
+	vicap_set_c_width(vicap_para->width);
 	vicap_set_c_height(vicap_para->height-1);
 	vicap_set_c_stride(vicap_para->width);
 	vicap_set_pack_c_width(vicap_para->width*16-1);

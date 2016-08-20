@@ -85,7 +85,6 @@ void boot_card(
    *  Initialize the RTEMS Workspace and the C Program Heap.
    */
   bsp_work_area_initialize();
-
   /*
    *  Initialize RTEMS data structures
    */

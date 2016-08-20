@@ -3,7 +3,40 @@
 
 #include <rtems.h>
 
-#define I2C_WAIT_TIME_OUT       0x1000 
+//#define USE_DMAC
+
+#define HI_I2C_UNLOCK_VALUE	0x1ACCE551
+#define HI_I2C_ENABLE		(1 << 0)
+#define HI_I2C_AUTO_MODE_OFF	0x0f000000
+#define HI_I2C_FAST_MODE		0x65
+#define HI_I2C_RX_FIFO			0x8
+#define HI_I2C_TX_FIFO			0x8
+#define DEFAULT_I2C_REG_IMSC		0x0UL
+#define DISABLE_ALL_INTERRUPTS		((~DEFAULT_I2C_REG_IMSC) & 0xfff)
+#define ENABLE_ALL_INTERRUPTS		DEFAULT_I2C_REG_IMSC
+#define I2C_WAIT_IDLE_TIME_OUT  0x1000000
+#define I2C_RAW_TX_ABORT            (1 << 6)
+#define HI_I2C_WRITE		0x80000000
+#define HI_I2C_READ		0xc0000000
+#define I2C_AUTO_DATA               (1 << 28)
+#define I2C_AUTO_ADDR               (1 << 29)
+
+
+/* I2C_STATUS */
+#define I2C_AUTO_RX_FIFO_NOT_EMPTY  (1 << 8)
+#define I2C_AUTO_TX_FIFO_EMPTRY     (1 << 20)
+#define I2C_AUTO_TX_FIFO_NOT_FULL   (1 << 21)
+#define I2C_STATUS_WORKING          (1 << 0)
+
+#define IS_TX_FIFO_EMPTY(status)        (((status) &\
+			I2C_AUTO_TX_FIFO_EMPTRY) == I2C_AUTO_TX_FIFO_EMPTRY)
+#define IS_RX_FIFO_EMPTY(status)        (((status) &\
+			I2C_AUTO_RX_FIFO_NOT_EMPTY) == 0)
+#define IS_FIFO_EMPTY(status)           (IS_RX_FIFO_EMPTY(status) &&\
+			IS_TX_FIFO_EMPTY(status))
+#define IS_I2C_IDLE(status)             (((status) & I2C_STATUS_WORKING) == 0)
+
+#define I2C_WAIT_TIME_OUT       0x5000 
 #define CFG_I2C_IRQEN				(1<<20)
 
 /* Asic apb clk is 100M */
@@ -59,6 +92,12 @@
 #define I2C_ACK_INTR (1 << 2)
 #define I2C_ARBITRATE_INTR (1 << 1)
 #define I2C_OVER_INTR (1 << 0)
+
+typedef enum i2c_mode_e {
+	I2C_MODE_AUTO,
+	I2C_MODE_DMA,
+	I2C_MODE_NONE,
+} i2c_mode_e;
 
 typedef struct
 {

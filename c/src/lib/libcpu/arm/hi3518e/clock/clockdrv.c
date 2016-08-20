@@ -23,24 +23,25 @@
 #define CFG_TIMER_ENABLE			(1 << 7)
 #define CFG_TIMER_PERIODIC		(1 << 6)
 #define CFG_TIMER_INTMASK		(1 << 5)
+#define CFG_TIMER_DRI				(1 << 2)
 #define CFG_TIMER_32BIT			(1 << 1)
 
 #define CFG_TIMER_IRQEN			(1<<3)
 
 #define CFG_TIMER_CONTROL		(CFG_TIMER_ENABLE | CFG_TIMER_PERIODIC\
-					| CFG_TIMER_INTMASK | CFG_TIMER_32BIT)
+					| CFG_TIMER_INTMASK |CFG_TIMER_DRI |CFG_TIMER_32BIT)
 
 #define CFG_TIMER_PRESCALE		2 /* AXI:APB = 2:1 */
-#define HZ									100 /* 10ms */
-#define BUSCLK_TO_TIMER_RELOAD(busclk)	 (((busclk)/CFG_TIMER_PRESCALE)/HZ)
+#define HZ									1000 /* 1ms */
+#define BUSCLK_TO_TIMER_RELOAD(busclk)	 (((busclk)/CFG_TIMER_PRESCALE)/HZ/4)
 
 void Clock_isr(rtems_irq_hdl_param arg);
 static void clock_isr_on(const rtems_irq_connect_data *unused);
 static void clock_isr_off(const rtems_irq_connect_data *unused);
 static int clock_isr_is_on(const rtems_irq_connect_data *irq);
 
-static hi_timer_regs_s *timer0_reg = (hi_timer_regs_s *)TIMER0_REG_BASE;
-static hi_sysctrl_regs_s *sysctrl_reg = (hi_sysctrl_regs_s *)SYSCTRL_REG_BASE;
+static volatile hi_timer_regs_s *timer0_reg = (hi_timer_regs_s *)TIMER0_REG_BASE;
+static volatile hi_sysctrl_regs_s *sysctrl_reg = (hi_sysctrl_regs_s *)SYSCTRL_REG_BASE;
 
 rtems_irq_connect_data clock_isr_data = {
 	.name 	= BSP_INT_TIMER0_1,
@@ -83,7 +84,7 @@ rtems_irq_connect_data clock_isr_data = {
  * clock_isr_off(), and clock_isr_is_on() functions can be
  * NOPs.
  */
-
+#ifdef HI3518EV100	
 #define Clock_driver_support_initialize_hardware() \
 	do { \
 		/* set clock source busclk */ \
@@ -94,7 +95,17 @@ rtems_irq_connect_data clock_isr_data = {
 		timer0_reg->load = BUSCLK_TO_TIMER_RELOAD(CFG_CLK_BUS); \
 		timer0_reg->ctrl = CFG_TIMER_CONTROL;\
 		} while (0)
+#else defined HI3518EV200
+#define Clock_driver_support_initialize_hardware() \
+	do { \
+		/* set clock source busclk */ \
+		sysctrl_reg->sc_ctrl = (sysctrl_reg->sc_ctrl |  (1<<16) | (1<<18) | (1<<20)); \
+		timer0_reg->ctrl = 0x0; \
+		timer0_reg->load = BUSCLK_TO_TIMER_RELOAD(CFG_CLK_BUS); \
+		timer0_reg->ctrl = CFG_TIMER_CONTROL;\
+		} while (0)
 
+#endif //end HI3518EV100
 /**
  * Do whatever you need to shut the clock down and remove the
  * interrupt handler. Since this normally only gets called on

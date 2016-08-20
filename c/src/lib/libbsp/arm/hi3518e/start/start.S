@@ -45,6 +45,27 @@ _start:
          * I'll just set the CPSR for SVC mode, interrupts
          * off, and ARM instructions.
          */
+         ldr	r0, =0x200F00A0
+		mov r1, #0x0
+		str	r1, [r0]
+
+		ldr	r0, =0x200F00B8
+		mov r1, #0x2
+		str	r1, [r0]
+
+		ldr	r0, =0x20190400
+		ldr	r1, [r0]
+		orr	r1, r1, #0x41
+		str	r1, [r0]
+
+		ldr	r0, =0x20190004
+		mov r1, #0x1
+		str	r1, [r0]
+
+		ldr	r0, =0x20190100
+		mov r1, #0x1				
+		str	r1, [r0]
+		
         mov     r0, #(PSR_MODE_SVC | PSR_I | PSR_F)
         msr     cpsr, r0
 
@@ -109,7 +130,7 @@ _bss_init:
         ldmia   r1!, {r2-r9}
         stmia   r0!, {r2-r9}
 
-        /* Now we are prepared to start the BSP's C code */
+        /* Now we are prepared to start the BSP's C code */	
         mov     r0, #0
         bl      boot_card
 
