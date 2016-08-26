@@ -19,8 +19,8 @@
 #include <hi3518e.h>
 #include <gpio_drv.h>
 
-static volatile hi_pinmux_regs_s *hi_pinmux_reg = NULL;
-static volatile hi_gpio_regs_s *gpio_reg = NULL;
+static volatile hi_pinmux_regs_s * volatile hi_pinmux_reg = NULL;
+static volatile hi_gpio_regs_s * volatile gpio_reg = NULL;
 
 static unsigned int gpio_reg_base[12] = {
 	GPIO0_REG_BASE, GPIO1_REG_BASE, GPIO2_REG_BASE, GPIO3_REG_BASE, GPIO4_REG_BASE, GPIO5_REG_BASE,

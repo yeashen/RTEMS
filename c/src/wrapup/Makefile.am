@@ -19,8 +19,10 @@ SRCS += ../libchip/libflash.a
 SRCS += ../libchip/librtcio.a
 SRCS += ../libchip/libsensorio.a
 SRCS += ../libchip/libvicapio.a
-SRCS += ../libchip/libgpioio.a
 SRCS += ../libchip/libserialio.a
+SRCS += ../libchip/libgpioio.a
+SRCS += ../libchip/libvirtualregio.a
+SRCS += ../libchip/libpkthandleio.a
 SRCS += ../libchip/libide.a
 if HAS_NETWORKING
 SRCS += ../libchip/libnetchip.a

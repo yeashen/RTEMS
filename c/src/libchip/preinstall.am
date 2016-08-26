@@ -166,6 +166,18 @@ $(PROJECT_INCLUDE)/libchip/gpio.h: gpio/gpio.h $(PROJECT_INCLUDE)/libchip/$(dirs
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libchip/gpio.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/libchip/gpio.h
 
+$(PROJECT_INCLUDE)/libchip/virreg.h: virtualreg/virreg.h $(PROJECT_INCLUDE)/libchip/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libchip/virreg.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/libchip/virreg.h
+
+$(PROJECT_INCLUDE)/libchip/virreg_hal.h: virtualreg/virreg_hal.h $(PROJECT_INCLUDE)/libchip/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libchip/virreg_hal.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/libchip/virreg_hal.h
+
+$(PROJECT_INCLUDE)/libchip/pkthandle.h: pkthandle/pkthandle.h $(PROJECT_INCLUDE)/libchip/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libchip/pkthandle.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/libchip/pkthandle.h
+
 $(PROJECT_INCLUDE)/libchip/mc68681.h: serial/mc68681.h $(PROJECT_INCLUDE)/libchip/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libchip/mc68681.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/libchip/mc68681.h

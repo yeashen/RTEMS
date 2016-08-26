@@ -20,6 +20,7 @@
 #include <libchip/vicap.h>
 #include <vicap_drv.h>
 #include <bsp/irq.h>
+#include <uart.h>
 
 unsigned int fstart = 0;
 unsigned int fcc = 0;
@@ -104,6 +105,8 @@ int video_capture_open(rtems_id taskid)
 		return -1;
 	}
 
+	hi_uart2_fns.deviceFirstOpen(0, 2, NULL);
+
 	return 0;
 }
 	
@@ -139,7 +142,7 @@ void video_capture_init(sensor_type_e sns_type, vicap_para_s *vicap_para)
 	vicap_set_vact(vicap_para->height);
 
 	status = rtems_semaphore_create(
-		"vi_mutex",
+		rtems_build_name('S', 'P', 'M', '0'),
 		1,
 		RTEMS_DEFAULT_ATTRIBUTES,
 		RTEMS_NO_PRIORITY,
@@ -200,5 +203,7 @@ void video_capture_close()
 				video_capture_isr,
 				NULL);
 	rtems_semaphore_delete(v_mutex);
+
+	hi_uart2_fns.deviceLastClose(0, 2, NULL);
 }
 

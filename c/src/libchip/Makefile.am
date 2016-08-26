@@ -112,6 +112,19 @@ noinst_LIBRARIES += libvicapio.a
 libvicapio_a_CPPFLAGS = $(AM_CPPFLAGS)
 libvicapio_a_SOURCES = vicap/vicap.c
 
+# virtual reg
+include_libchip_HEADERS += virtualreg/virreg.h \
+	virtualreg/virreg_hal.h
+noinst_LIBRARIES += libvirtualregio.a
+libvirtualregio_a_CPPFLAGS = $(AM_CPPFLAGS)
+libvirtualregio_a_SOURCES = virtualreg/virreg_hal.c
+
+# packet handle
+include_libchip_HEADERS += pkthandle/pkthandle.h 
+noinst_LIBRARIES += libpkthandleio.a
+libpkthandleio_a_CPPFLAGS = $(AM_CPPFLAGS)
+libpkthandleio_a_SOURCES = pkthandle/pkthandle.c
+
 # gpio
 include_libchip_HEADERS += gpio/gpio.h
 noinst_LIBRARIES += libgpioio.a

@@ -19,9 +19,9 @@
 #include <hi3518e.h>
 #include <vicap_drv.h>
 
-static volatile hi_vi_regs_s *vi_reg = NULL;
+static volatile hi_vi_regs_s * volatile vi_reg = NULL;
 //static hi_vi_regs_s *vi_reg = NULL;
-static volatile hi_pinmux_regs_s *pinmux_reg = NULL;
+static volatile hi_pinmux_regs_s * volatile pinmux_reg = NULL;
 //static hi_pinmux_regs_s *pinmux_reg = NULL;
 
 #ifdef HI3518EV100

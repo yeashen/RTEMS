@@ -40,8 +40,8 @@ static void clock_isr_on(const rtems_irq_connect_data *unused);
 static void clock_isr_off(const rtems_irq_connect_data *unused);
 static int clock_isr_is_on(const rtems_irq_connect_data *irq);
 
-static volatile hi_timer_regs_s *timer0_reg = (hi_timer_regs_s *)TIMER0_REG_BASE;
-static volatile hi_sysctrl_regs_s *sysctrl_reg = (hi_sysctrl_regs_s *)SYSCTRL_REG_BASE;
+static volatile hi_timer_regs_s * volatile timer0_reg = (hi_timer_regs_s *)TIMER0_REG_BASE;
+static volatile hi_sysctrl_regs_s * volatile sysctrl_reg = (hi_sysctrl_regs_s *)SYSCTRL_REG_BASE;
 
 rtems_irq_connect_data clock_isr_data = {
 	.name 	= BSP_INT_TIMER0_1,

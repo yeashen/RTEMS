@@ -65,7 +65,8 @@ extern "C" {
 #define UART_PL011_IMSC_CTSMIM          (1 << 1)
 #define UART_PL011_IMSC_RIMIM           (1 << 0)
 
-extern const console_fns hi_uart_fns;
+extern const console_fns hi_uart2_fns;
+extern const console_fns hi_uart0_fns;
 
 /** @} */
 

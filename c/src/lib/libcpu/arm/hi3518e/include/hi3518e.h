@@ -67,9 +67,8 @@
 
 #define CFG_CLK_BUS		get_bus_clk()
 
-#define CRG_REG_BASE			0x20030000
-
 /*************************Base Address****************************************/
+#define CRG_REG_BASE			0x20030000
 /* System */
 #define SYSCTRL_REG_BASE			0x20050000
 /* PinMux */

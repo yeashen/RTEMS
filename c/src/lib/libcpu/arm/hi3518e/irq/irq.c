@@ -36,6 +36,9 @@ void bsp_interrupt_dispatch(void)
 		case (1<<BSP_INT_VICAP) : 
 			vector = BSP_INT_VICAP; 
 			break;
+		case (1<<BSP_INT_UART2):
+			vector = BSP_INT_UART2;
+			break;
 		default : 
 			printk("vector=0x%x\n", regval);
 			vector = BSP_INT_TIMER0_1; 

@@ -37,7 +37,7 @@ typedef struct {
 } hi_i2c_data_s;
 
 static hi_i2c_data_s i2c_data[I2C_NUM];
-static volatile hi_pinmux_regs_s *pinmux_regs = NULL;
+static volatile hi_pinmux_regs_s * volatile pinmux_regs = NULL;
 
 static uint8_t i2c_init_flag = 0;
 static uint32_t g_last_dev_addr = 0;
