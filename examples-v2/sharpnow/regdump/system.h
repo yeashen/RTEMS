@@ -1,0 +1,42 @@
+#ifndef _SYSTEM_H
+#define _SYSTEM_H
+
+//#define SNS_OV9712
+#define SNS_POA030R
+
+#ifdef SNS_OV9712
+#define VI_IMG_WIDTH			640
+#define VI_IMG_HEIGHT		400
+#endif
+
+#ifdef SNS_POA030R
+#define VI_IMG_WIDTH			640//320
+#define VI_IMG_HEIGHT		480//240
+#endif
+
+#define IMG_SIZE					(VI_IMG_WIDTH*VI_IMG_WIDTH*2)
+
+/**************** START OF CONFIGURATION INFORMATION ****************/
+
+#define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
+#define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
+
+#define CONFIGURE_MAXIMUM_TASKS             2
+
+#define CONFIGURE_RTEMS_INIT_TASKS_TABLE
+
+#define CONFIGURE_INIT_TASK_STACK_SIZE    (2 * RTEMS_MINIMUM_STACK_SIZE)
+
+#define CONFIGURE_EXTRA_TASK_STACKS       (4 * RTEMS_MINIMUM_STACK_SIZE)
+
+#define CONFIGURE_MAXIMUM_SEMAPHORES         4
+
+#define CONFIGURE_MAXIMUM_PARTITIONS          2
+
+#define CONFIGURE_INIT
+#include <rtems/confdefs.h>
+
+/****************  END OF CONFIGURATION INFORMATION  ****************/
+
+
+#endif /* _SYSTEM_H */

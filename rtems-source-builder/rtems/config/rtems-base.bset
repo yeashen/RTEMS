@@ -1,0 +1,23 @@
+#
+# Base defines for RTEMS
+#
+
+#
+# Define the build target.
+#
+%define _target %{rtems_arch}-rtems%{rtems_version}
+
+#
+# The generic package name.
+#
+package: rtems-%{rtems_version}-%{_target}-%{_host}-%{release}
+
+#
+# Project custom message
+#
+%define gcc_version_message RTEMS %{rtems_version}, RSB %{_sbgit_id}, Newlib %{newlib_version}
+
+#
+# Pick up the RTEMS URLs.
+#
+%include rtems-urls.bset
