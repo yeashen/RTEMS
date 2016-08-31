@@ -57,11 +57,7 @@ rtems_task Task_1(rtems_task_argument task_index)
 #else
 rtems_task Task_1(rtems_task_argument task_index)
 {
-	unsigned char c;
-
 	for(;;){
-		c = hi_uart0_fns.deviceRead(0);
-		printf("uart0 - %d\n", c);
 		(void) rtems_task_wake_after(task_index*rtems_clock_get_ticks_per_second());
 	}
 }
@@ -76,11 +72,8 @@ rtems_task Task_2(rtems_task_argument task_index)
 
 rtems_task Task_3(rtems_task_argument task_index)
 {
-	unsigned char c;
-
 	for(;;){
-		c = hi_uart2_fns.deviceRead(2);
-		printf("uart2 - %d\n", c);
+		printf("%s\n", __FUNCTION__);
 		(void) rtems_task_wake_after(task_index*rtems_clock_get_ticks_per_second());
 	}
 }

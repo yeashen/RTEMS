@@ -105,7 +105,7 @@ int video_capture_open(rtems_id taskid)
 		return -1;
 	}
 
-	hi_uart2_fns.deviceFirstOpen(0, 2, NULL);
+	//hi_uart2_fns.deviceFirstOpen(0, 2, NULL);
 
 	return 0;
 }
@@ -204,6 +204,6 @@ void video_capture_close()
 				NULL);
 	rtems_semaphore_delete(v_mutex);
 
-	hi_uart2_fns.deviceLastClose(0, 2, NULL);
+	//hi_uart2_fns.deviceLastClose(0, 2, NULL);
 }
 

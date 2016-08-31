@@ -41,8 +41,8 @@ static void    hi_uart_initialize(int minor);
 static void    hi_uart_write_polled(int minor, char c);
 int  hi_uart_read_polled(int minor);
 static int     hi_uart_set_attributes(int minor, const struct termios *t);
-static void hi_uart2_isr(void *);
-const console_fns hi_uart2_fns = {
+static void hi_uart0_isr(void *);
+const console_fns hi_uart0_fns = {
   .deviceProbe = libchip_serial_default_probe,
   .deviceFirstOpen = hi_uart_first_open,
   .deviceLastClose = hi_uart_last_close,
@@ -51,11 +51,11 @@ const console_fns hi_uart2_fns = {
   .deviceInitialize = hi_uart_initialize,
   .deviceWritePolled = hi_uart_write_polled,
   .deviceSetAttributes = hi_uart_set_attributes,
-  .deviceOutputUsesInterrupts = TERMIOS_IRQ_DRIVEN
+  .deviceOutputUsesInterrupts = TERMIOS_POLLED
 };
 
 /* Pointers to functions for handling the UART. */
-const console_fns hi_uart0_fns = {
+const console_fns hi_uart2_fns = {
   .deviceProbe = libchip_serial_default_probe,
   .deviceFirstOpen = hi_uart_first_open,
   .deviceLastClose = hi_uart_last_close,
@@ -97,7 +97,7 @@ console_tbl Console_Configuration_Ports[] = {
 	{
 		.sDeviceName = "/dev/com1",
 		.deviceType = SERIAL_CUSTOM,
-		.pDeviceFns = &hi_uart0_fns,
+		.pDeviceFns = &hi_uart2_fns,
 		.deviceProbe = NULL,
 		.pDeviceFlow = NULL,
 		.ulMargin = 0,
@@ -148,9 +148,6 @@ typedef struct {
 
 static hi_uart_data_s hi_uart_data[3];
 static int uart_inited_flag = 0;
-unsigned int pkt_len = sizeof(danmu_pkt_s);
-static unsigned int recving = 0;
-static unsigned int count = 0;
 static volatile hi_pinmux_regs_s * volatile pinmux_regs = NULL;
 
 /*********************************************************************/
@@ -169,13 +166,12 @@ static int hi_uart_first_open(int major, int minor, void *arg)
 	
     rtems_status_code status = RTEMS_SUCCESSFUL;
 
-	if(minor == 2){
-		printk("install uart2 interrupt\n");
+	if(minor == 0){
 		status = rtems_interrupt_handler_install(
-	        BSP_INT_UART2,
-	        "UART2",
+	        BSP_INT_UART0_1,
+	        "UART0",
 	        RTEMS_INTERRUPT_UNIQUE,
-	        hi_uart2_isr,
+	        hi_uart0_isr,
 	        &hi_uart_data[minor]
 	    );
 	    assert(status == RTEMS_SUCCESSFUL);
@@ -194,10 +190,10 @@ static int hi_uart_last_close(int major, int minor, void *arg)
 {
 	rtems_status_code status = RTEMS_SUCCESSFUL;
 
-	if(minor == 2){
+	if(minor == 0){
 	    status = rtems_interrupt_handler_remove(
-	        BSP_INT_UART2,
-	        hi_uart2_isr,
+	        BSP_INT_UART0_1,
+	        hi_uart0_isr,
 	        &hi_uart_data[minor]
 	    );
 	    assert(status == RTEMS_SUCCESSFUL);
@@ -311,9 +307,10 @@ static void hi_uart_initialize(int minor)
 	/*
 	 ** Set the UART to be 8 bits, 1 stop bit, no parity, fifo enabled.
 	 */
-	hi_uart_data[minor].regs->lcr_h = UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN;
+	//hi_uart_data[minor].regs->lcr_h = UART_PL011_LCRH_WLEN_8 | UART_PL011_LCRH_FEN;
+	hi_uart_data[minor].regs->lcr_h = UART_PL011_LCRH_WLEN_8;
 
-	if(minor == 2){
+	if(minor == 0){
 		hi_uart_data[minor].regs->imsc = UART_PL011_IMSC_RXIM;
 	}
 
@@ -338,42 +335,50 @@ static int     hi_uart_set_attributes(int minor, const struct termios *t)
     return 0;
 }
 
-static void hi_uart2_isr(void * param)
+static unsigned int recving = 0;
+static unsigned int count = 0;
+static danmu_pkt_s pkt;
+static void hi_uart0_isr(void * param)
 {
-#if 0
-	int minor = 2;
-	unsigned char cdata, pkt[262];
+	int minor = 0;
+	unsigned int data,  paramlen = 0, i = 0;
 	
 	if(hi_uart_data[minor].regs->mis & UART_PL011_IMSC_RXIM){
-		cdata = hi_uart_data[minor].regs->dr;
-		if(cdata == PACKET_START){
-				recving = 1;
-				pkt[count++] = cdata;
-				return;
-		}
-		if(count == 261){
-			recving = 0;
-			packet_handle((danmu_pkt_s *)pkt);
-			return;
-		}
-		if(recving == 1){
-			pkt[count++] = cdata;
-		}
-	}
-#endif
+		if(!(hi_uart_data[minor].regs->fr & UART_PL01x_FR_RXFE)){
+			data = hi_uart_data[minor].regs->dr;
 
-#if 1
-	int minor = 2;
-	static unsigned int irled = 0;
-	printk("get uart2 irq\n");
-	gpio_set(GPIO5, GPIO_PIN0, irled);	//led0
-	
-	if(hi_uart_data[minor].regs->mis & UART_PL011_IMSC_RXIM){
-		gpio_set(GPIO1, GPIO_PIN2, irled);
-		irled = !irled;
-		hi_uart_data[minor].regs->icr = UART_PL011_IMSC_RXIM;
+			if((!recving) && (data == PACKET_START)){
+				recving = 1;
+				count++;
+				pkt.start = data;
+				hi_uart_data[minor].regs->icr = UART_PL011_IMSC_RXIM;
+				return;
+			}
+
+			if(count == 1){
+				pkt.type = data;
+			}else if(count == 2){
+				pkt.cmd = data;
+			}else if(count == 3){
+				pkt.len = data;
+			}else if(count == (pkt.len+4)){
+				pkt.checksum = data;
+			}else if(count == (pkt.len+5)){
+				pkt.checksum |= (data<<8);
+				recving = 0;
+				count = 0;
+				packet_handle(&pkt);
+				hi_uart_data[minor].regs->icr = UART_PL011_IMSC_RXIM;
+				return;
+			}else{
+				if(i < pkt.len){
+					pkt.params[i++] = data;
+				}
+			}	
+			count++;
+			hi_uart_data[minor].regs->icr = UART_PL011_IMSC_RXIM;
+		}
 	}
-#endif
 }
 
 /***********************************************************************/

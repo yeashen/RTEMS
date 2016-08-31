@@ -21,7 +21,7 @@
 #include <hi3518e.h>
 
 bool benchmark_timer_find_average_overhead;
-static hi_timer_regs_s *timer1_reg = NULL;
+static volatile hi_timer_regs_s * volatile timer1_reg = NULL;
 
 #define TIMER_LOAD_VAL 0xffffffff
 
@@ -42,7 +42,7 @@ void benchmark_timer_initialize( void )
 {
 	uint32_t tmp;
 	timer1_reg = (hi_timer_regs_s *)TIMER1_REG_BASE;
-
+#if 0
 	/* enable the reference clk. but we did not find the reset switch */
 	tmp = timer1_reg->ctrl;
 	timer1_reg->ctrl = tmp | (1<<16) | (1<<18) | (1<<20);
@@ -61,6 +61,7 @@ void benchmark_timer_initialize( void )
 
 	/* init the timestamp and lastdec value */
 	reset_timer_masked();
+#endif
 }
 
 /*

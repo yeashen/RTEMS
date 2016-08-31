@@ -1,10 +1,10 @@
 #
 #  RTEMS_MAKEFILE_PATH is typically set in an environment variable
 #
-RTEMS_MAKEFILE_PATH=/home/lxm/Test/rtems/install/arm-rtems4.11/hi3518e
+RTEMS_MAKEFILE_PATH=$(HOME)/hi3518e/rtems/install/arm-rtems4.11/hi3518e
 PGM=${ARCH}/camera.exe
-RTEMS_TFTP=/home/lxm/Test/hi3518e
-MKIMG=/home/lxm/Test/rtems/examples-v2/mkimage
+RTEMS_TFTP=/home/share/tftp
+MKIMG=$(HOME)/hi3518e/rtems/rtems/examples-v2/mkimage
 
 # optional managers required
 MANAGERS=all

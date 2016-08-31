@@ -22,7 +22,7 @@
 
 #include <hi3518e.h>
 
-static volatile hi_irq_regs_s *irq_reg = NULL;
+static volatile hi_irq_regs_s * volatile irq_reg = NULL;
 
 void bsp_interrupt_dispatch(void)
 {
@@ -35,6 +35,9 @@ void bsp_interrupt_dispatch(void)
 			break;
 		case (1<<BSP_INT_VICAP) : 
 			vector = BSP_INT_VICAP; 
+			break;
+		case (1<<BSP_INT_UART0_1):
+			vector = BSP_INT_UART0_1;
 			break;
 		case (1<<BSP_INT_UART2):
 			vector = BSP_INT_UART2;
