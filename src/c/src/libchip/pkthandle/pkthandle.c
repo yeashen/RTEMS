@@ -19,8 +19,6 @@
 #include <uart.h>
 #include <libchip/pkthandle.h>
 #include <libchip/virreg_hal.h>
-#include <libchip/gpio.h>
-
 /*
   *  type: 0 --check packet checksum;		1 --generate packet checksum
   */

@@ -19,7 +19,7 @@
 #include <libchip/pkthandle.h>
 
 #include "system.h"
-#if 0
+#if 1
 rtems_task Task_1(rtems_task_argument task_index)
 {
 	int sc;

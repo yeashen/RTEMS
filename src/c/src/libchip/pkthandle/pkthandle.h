@@ -24,7 +24,7 @@ typedef enum{
 
 #define PACKET_START 		0xA5
 
-#define DAMNU_UART_MINOR		0
+#define DAMNU_UART_MINOR		2
 
 /* command define */
 #define CMD_SYS_INFO		0x00

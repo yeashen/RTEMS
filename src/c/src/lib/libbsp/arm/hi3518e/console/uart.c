@@ -27,7 +27,6 @@
 #include <libchip/serial.h>
 #include <libchip/sersupp.h>
 #include <libchip/pkthandle.h>
-#include <libchip/gpio.h>
 
 #include <hi3518e.h>
 #include <uart.h>
@@ -78,7 +77,7 @@ console_tbl Console_Configuration_Ports[] = {
 	{
 		.sDeviceName = "/dev/com0",
 		.deviceType = SERIAL_CUSTOM,
-		.pDeviceFns = &hi_uart_irq_fns,
+		.pDeviceFns = &hi_uart_fns,
 		.deviceProbe = NULL,
 		.pDeviceFlow = NULL,
 		.ulMargin = 0,
@@ -116,7 +115,7 @@ console_tbl Console_Configuration_Ports[] = {
 	{
 		.sDeviceName = "/dev/com2",
 		.deviceType = SERIAL_CUSTOM,
-		.pDeviceFns = &hi_uart_fns,
+		.pDeviceFns = &hi_uart_irq_fns,
 		.deviceProbe = NULL,
 		.pDeviceFlow = NULL,
 		.ulMargin = 0,
@@ -336,7 +335,6 @@ static int     hi_uart_set_attributes(int minor, const struct termios *t)
 static unsigned int recving = 0;
 static unsigned int count = 0;
 static danmu_pkt_s pkt;
-static unsigned int irled = 1;
 static void hi_uart_isr(void * param)
 {
 	int minor = 0;
@@ -345,9 +343,6 @@ static void hi_uart_isr(void * param)
 	if(hi_uart_data[minor].regs->mis & UART_PL011_IMSC_RXIM){
 		if(!(hi_uart_data[minor].regs->fr & UART_PL01x_FR_RXFE)){
 			data = hi_uart_data[minor].regs->dr;
-
-			gpio_set(GPIO1, GPIO_PIN2, irled);	
-			irled = !irled;
 
 			if((!recving) && (data == PACKET_START)){
 				recving = 1;

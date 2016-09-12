@@ -113,7 +113,7 @@ rtems_task Init( rtems_task_argument argument)
 
 		status = rtems_partition_get_buffer( Partition_id[i], &buffer_addr_y[i]);
 		CHECK_RET(status, "rtems_partition_get_buffer Y");
-		//printf("y_addr: %p\n", buffer_addr_y[i]);
+		printf("y_addr: %p\n", buffer_addr_y[i]);
 	}
 	
 	Partition_name[i] =  rtems_build_name( 'P', 'T', i, ' ' );
