@@ -291,6 +291,11 @@ unsigned int vicap_get_ch_int_status()
 	return vi_reg->ch_int;
 }
 
+unsigned int vicap_set_pt_enable(unsigned int enable)
+{
+	vi_reg->pt_mode = (enable << 31);
+}
+
 unsigned int vicap_get_pt_height()
 {
 	unsigned int val;
@@ -437,7 +442,6 @@ void vicap_reg_init(sensor_type_e sns_type)
 	/* axi_bus */
 	vi_reg->axi = 0x10103030;
 	vi_reg->vi_int_en = 0x2;
-	vi_reg->pt_mode = PT_EN;
 	vi_reg->pt_int_en = 0x0;
 	vi_reg->pt_offset0 = 0xFFC00000;
 	vi_reg->pt_offset1 = 0xFFF00010;
@@ -451,7 +455,6 @@ void vicap_reg_init(sensor_type_e sns_type)
 	vi_reg->vbfb = 0x0;
 	vi_reg->vbact = 0x0;
 	vi_reg->vbbb = 0x0;
-	vi_reg->des_crop_cfg = 0x1;
 	vi_reg->buf_mode = 0x0;
 	vi_reg->lb_cfg = 0x80000000;
 	vi_reg->lb_id = 0x1;

@@ -44,6 +44,7 @@ void vicap_set_pack_y_width(unsigned int width);
 
 void vicap_set_pack_c_width(unsigned int width);
 
+unsigned int vicap_set_pt_enable(unsigned int enable);
 
 unsigned int vicap_get_ch_int_en();
 

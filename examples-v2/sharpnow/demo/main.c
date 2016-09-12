@@ -19,7 +19,7 @@
 #include <libchip/pkthandle.h>
 
 #include "system.h"
-#if 1
+#if 0
 rtems_task Task_1(rtems_task_argument task_index)
 {
 	int sc;
@@ -64,7 +64,7 @@ rtems_task Task_1(rtems_task_argument task_index)
 {
 	int status = 0;
 	buf_info b_info;
-	//unsigned char irled = 1;
+	unsigned char irled = 1;
 	unsigned char start_flag = 0;
 	unsigned int start = 0;
 	int sc;
@@ -89,6 +89,7 @@ rtems_task Task_1(rtems_task_argument task_index)
 			{
 				gpio_set(GPIO1, GPIO_PIN2, irled);
 				irled = !irled;
+				#if 0
 				if((w_fd =fopen(data_name,"w")) == NULL)
 				{
 					printf("\nerror on open %s", data_name);
@@ -99,6 +100,7 @@ rtems_task Task_1(rtems_task_argument task_index)
 
 				status = rtems_event_send(Task_id[3], RTEMS_EVENT_15);
 				CHECK_RET(status, "rtems_event_send");
+				#endif
 				//printf("catch: cur=%d, valid=%d, w_pos=%d\n", b_info.cur_num, b_info.valid_num,b_info.w_pos);
 			}else{
 				//printf("get data failed\n");
@@ -106,12 +108,13 @@ rtems_task Task_1(rtems_task_argument task_index)
 		}
 		else
 		{
-			start_flag = 0;
 			video_capture_ioctl(VICAP_STOP_CAPTURE, 0);
+			start_flag = 0;
 		}
 		(void) rtems_task_wake_after(rtems_clock_get_ticks_per_second()/100);
 	}
 }
+
 #endif
 
 /*

@@ -113,7 +113,7 @@ rtems_task Init( rtems_task_argument argument)
 
 		status = rtems_partition_get_buffer( Partition_id[i], &buffer_addr_y[i]);
 		CHECK_RET(status, "rtems_partition_get_buffer Y");
-		printf("y_addr: %p\n", buffer_addr_y[i]);
+		//printf("y_addr: %p\n", buffer_addr_y[i]);
 	}
 	
 	Partition_name[i] =  rtems_build_name( 'P', 'T', i, ' ' );
@@ -148,9 +148,10 @@ rtems_task Init( rtems_task_argument argument)
 
 #ifdef SNS_POA030R
 	sensor_type = SENSOR_POA030R;
-	sensor_poa030r_init(MODE_320x240_30FPS);
+	//sensor_poa030r_init(MODE_320x240_30FPS);
 	//sensor_poa030r_init(MODE_320x240_60FPS);
 	//sensor_poa030r_init(MODE_640x480_30FPS);
+	sensor_poa030r_init(MODE_640x480_60FPS);
 #endif
 	video_capture_open(Task_id[1]);
 	video_capture_init(sensor_type, &vicap_para);

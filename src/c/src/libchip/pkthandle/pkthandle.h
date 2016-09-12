@@ -16,13 +16,13 @@ typedef enum{
 }pkt_type_checksum;
 
 typedef enum{
-	PKT_REQ_SET = 0,
-	PKT_REQ_GET,
-	PKT_RSP_SET,
-	PKT_RSP_GET
+	PKT_REQ_SET = 0x00,
+	PKT_REQ_GET = 0x01,
+	PKT_RSP_SET = 0x10,
+	PKT_RSP_GET = 0x11
 }pkt_type_e;
 
-#define PACKET_START 		0x18
+#define PACKET_START 		0xA5
 
 #define DAMNU_UART_MINOR		0
 
@@ -31,16 +31,13 @@ typedef enum{
 #define CMD_SYS_RESET		0x10
 #define CMD_SYS_START		0x11
 #define CMD_INT_ENABLE_GLOBAL 		0x80
-#define CMD_INT_ENABLE_SEQ 			0x81
 #define CMD_INT_ENABLE_WAVE 		0x82
 #define CMD_INT_ENABLE_STAY 			0x83
 #define CMD_INT_ENABLE_TRANS 		0x84
 #define CMD_INT_STATUS_GLOBAL		0x85
-#define CMD_INT_STATUS_SEQ 			0x86
 #define CMD_INT_STATUS_WAVE 		0x87
 #define CMD_INT_STATUS_STAY 		0x88
 #define CMD_INT_STATUS_TRANS 		0x89
-#define CMD_INT_CONFIG 					0x90
 #define CMD_GDATA_POS_LC				0xc0
 #define CMD_GDATA_POS_L1				0xc1
 #define CMD_GDATA_POS_L2				0xc2
@@ -53,23 +50,10 @@ typedef enum{
 #define CMD_GDATA_POS_R3				0xc9
 #define CMD_GDATA_POS_R4				0xca
 #define CMD_GDATA_POS_R5				0xcb
-#define CMD_STATIC_GEST1				0xd0
-#define CMD_STATIC_GEST2				0xd1
-#define CMD_STATIC_GEST3				0xd2
-#define CMD_STATIC_GEST4				0xd3
-#define CMD_WAVE_GEST1					0xd4
-#define CMD_WAVE_GEST2					0xd5
-#define CMD_WAVE_GEST3					0xd6
-#define CMD_WAVE_GEST4					0xd7
-#define CMD_STAY_GEST1					0xd8
-#define CMD_STAY_GEST2					0xd9
-#define CMD_STAY_GEST3					0xda
-#define CMD_STAY_GEST4					0xdb
-#define CMD_TRANS_GEST1				0xdc
-#define CMD_TRANS_GEST2				0xdd
-#define CMD_TRANS_GEST3				0xde
-#define CMD_TRANS_GEST4				0xdf
-
+#define CMD_STATIC_GEST					0xd0
+#define CMD_WAVE_GEST					0xd4
+#define CMD_STAY_GEST					0xd8
+#define CMD_TRANS_GEST					0xdc
 
 int packet_handle(danmu_pkt_s *pkt);
 

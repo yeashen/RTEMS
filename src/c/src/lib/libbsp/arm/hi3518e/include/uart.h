@@ -7,6 +7,12 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define DEBUG_UART_MINOR				2
+
+
+#define UART0_BAUDRATE				115200
+#define UART2_BAUDRATE				57600
+
 #define UART_PL01x_RSR_OE               0x08
 #define UART_PL01x_RSR_BE               0x04
 #define UART_PL01x_RSR_PE               0x02
@@ -18,9 +24,6 @@ extern "C" {
 #define UART_PL01x_FR_RXFE              0x10
 #define UART_PL01x_FR_BUSY              0x08
 #define UART_PL01x_FR_TMSK              (UART_PL01x_FR_TXFF + UART_PL01x_FR_BUSY)
-
-#define UART_BAUDRATE				115200
-
 
 #define UART_PL011_IBRD                 0x24
 #define UART_PL011_FBRD                 0x28
@@ -65,8 +68,7 @@ extern "C" {
 #define UART_PL011_IMSC_CTSMIM          (1 << 1)
 #define UART_PL011_IMSC_RIMIM           (1 << 0)
 
-extern const console_fns hi_uart2_fns;
-extern const console_fns hi_uart0_fns;
+extern const console_fns hi_uart_fns;
 
 /** @} */
 

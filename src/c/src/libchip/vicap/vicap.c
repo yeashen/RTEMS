@@ -18,6 +18,7 @@
 
 #include <rtems.h>
 #include <libchip/vicap.h>
+#include <libchip/gpio.h>
 #include <vicap_drv.h>
 #include <bsp/irq.h>
 #include <uart.h>
@@ -27,6 +28,7 @@ unsigned int fcc = 0;
 static ring_buffer r_buf;
 static rtems_id   v_mutex;
 static  rtems_id user_task_id;
+static unsigned char led0 = 1;
 
 #define INC_WRAP(pos)    ((pos+1) == BUF_NUM ? 0 : (pos+1))
 
@@ -66,6 +68,15 @@ rtems_isr video_capture_isr(rtems_vector_number vector)
 	}else if(int_sta&CH_CC_INT){
 		//printk("one frame capture finish\n");
 		fcc++;
+
+		if((fstart==0)&&(fcc == 1)){
+			vicap_clear_ch_int(CH_CC_INT);
+			vicap_reg_newer();
+			return;
+		}
+
+		gpio_set(GPIO5, GPIO_PIN0, led0);
+		led0 =!led0;
 		
 		rtems_vicap_mutex_lock(&v_mutex);
 		index = r_buf.w_pos;
@@ -159,7 +170,11 @@ int video_capture_ioctl(VICAP_CTRL_CMD cmd, buf_info *b_info)
 	eventout = 10;
 	switch(cmd){
 		case VICAP_START_CAPTURE:
+			vicap_set_pt_enable(1);
 			vicap_reg_newer();
+			break;
+		case VICAP_STOP_CAPTURE:
+			vicap_set_pt_enable(0);
 			break;
 		case VICAP_GET_DATA_STA:
 			// TODO: event

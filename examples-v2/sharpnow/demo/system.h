@@ -45,14 +45,17 @@ extern void              *buffer_addr_y[3];
 //#define SNS_OV9712
 #define SNS_POA030R
 
+#define SYS_STOP		0x0
+#define SYS_START		0x1
+
 #ifdef SNS_OV9712
 #define VI_IMG_WIDTH			640
 #define VI_IMG_HEIGHT		400
 #endif
 
 #ifdef SNS_POA030R
-#define VI_IMG_WIDTH			320
-#define VI_IMG_HEIGHT		240
+#define VI_IMG_WIDTH			640
+#define VI_IMG_HEIGHT		480
 #endif
 
 #define IMG_SIZE					(VI_IMG_WIDTH*VI_IMG_WIDTH*2)		
