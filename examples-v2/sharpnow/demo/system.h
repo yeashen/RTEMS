@@ -55,8 +55,7 @@ extern void              *buffer_addr_y[3];
 #define VI_IMG_HEIGHT		240
 #endif
 
-#define IMG_SIZE					(VI_IMG_WIDTH*VI_IMG_WIDTH*2)
-
+#define IMG_SIZE					(VI_IMG_WIDTH*VI_IMG_WIDTH*2)		
 
 /**************** START OF CONFIGURATION INFORMATION ****************/
 

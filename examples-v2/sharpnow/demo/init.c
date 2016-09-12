@@ -29,6 +29,7 @@
 #include <libchip/vicap.h>
 #include <libchip/gpio.h>
 #include <libchip/virreg_hal.h>
+#include <libchip/pkthandle.h>
 
 rtems_id   Task_id[4];         /* array of task ids */
 rtems_name Task_name[4];       /* array of task names */
@@ -64,6 +65,9 @@ rtems_task Init( rtems_task_argument argument)
 	int i = 0;
 	sensor_type_e sensor_type;
 
+	/* init virtual reg */
+	virtualreg_init_reg();
+
 	/* create task */
 	Task_name[ 1 ] = rtems_build_name( 'T', 'A', '1', ' ' );
 	Task_name[ 2 ] = rtems_build_name( 'T', 'A', '2', ' ' );
@@ -93,9 +97,6 @@ rtems_task Init( rtems_task_argument argument)
 		RTEMS_DEFAULT_ATTRIBUTES, 
 		&Task_id[ 3 ]
 	);
-
-	/* init virtual reg */
-	virtualreg_init_reg();
 	
 	/* create pation */
 	for(i = 0; i < 3; i++)
@@ -112,7 +113,7 @@ rtems_task Init( rtems_task_argument argument)
 
 		status = rtems_partition_get_buffer( Partition_id[i], &buffer_addr_y[i]);
 		CHECK_RET(status, "rtems_partition_get_buffer Y");
-		//printf("y_addr: %p\n", buffer_addr_y[i]);
+		printf("y_addr: %p\n", buffer_addr_y[i]);
 	}
 	
 	Partition_name[i] =  rtems_build_name( 'P', 'T', i, ' ' );
@@ -148,20 +149,18 @@ rtems_task Init( rtems_task_argument argument)
 #ifdef SNS_POA030R
 	sensor_type = SENSOR_POA030R;
 	sensor_poa030r_init(MODE_320x240_30FPS);
+	//sensor_poa030r_init(MODE_320x240_60FPS);
 	//sensor_poa030r_init(MODE_640x480_30FPS);
 #endif
-	video_capture_open(Task_id[2]);
+	video_capture_open(Task_id[1]);
 	video_capture_init(sensor_type, &vicap_para);
-	video_capture_ioctl(VICAP_START_CAPTURE, 0);
+
+	gpio_set(GPIO4, GPIO_PIN3, 0);
 
 	(void) rtems_task_start( Task_id[ 1 ], Task_1, 1 );
 	(void) rtems_task_start( Task_id[ 2 ], Task_2, 2 );
 	(void) rtems_task_start( Task_id[ 3 ], Task_3, 3 );
 
-	gpio_set(GPIO4, GPIO_PIN3, 0);
-	usleep(10);
-	gpio_set(GPIO4, GPIO_PIN3, 1);
-	
 	(void) rtems_task_delete( RTEMS_SELF );
 }
 
