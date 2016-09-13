@@ -54,6 +54,7 @@ static void GpioInit()
 	gpio_set(GPIO0, GPIO_PIN5, 1);	
 	gpio_set(GPIO3, GPIO_PIN5, 0);   
 	gpio_set(GPIO5, GPIO_PIN0, 0);	//led0
+	gpio_set(GPIO5, GPIO_PIN6, 0);	//led1
 	gpio_set(GPIO0, GPIO_PIN5, 0);	//reset
 	usleep(10);
 	gpio_set(GPIO0, GPIO_PIN5, 1);	
@@ -113,7 +114,7 @@ rtems_task Init( rtems_task_argument argument)
 
 		status = rtems_partition_get_buffer( Partition_id[i], &buffer_addr_y[i]);
 		CHECK_RET(status, "rtems_partition_get_buffer Y");
-		printf("y_addr: %p\n", buffer_addr_y[i]);
+		//printf("y_addr: %p\n", buffer_addr_y[i]);
 	}
 	
 	Partition_name[i] =  rtems_build_name( 'P', 'T', i, ' ' );

@@ -45,10 +45,12 @@ _start:
          * I'll just set the CPSR for SVC mode, interrupts
          * off, and ARM instructions.
          */
+         /* led0 */
          ldr	r0, =0x200F00A0
 		mov r1, #0x0
 		str	r1, [r0]
 
+		/* led1 */
 		ldr	r0, =0x200F00B8
 		mov r1, #0x2
 		str	r1, [r0]
@@ -63,7 +65,7 @@ _start:
 		str	r1, [r0]
 
 		ldr	r0, =0x20190100
-		mov r1, #0x1				
+		mov r1, #0x40				
 		str	r1, [r0]
 		
         mov     r0, #(PSR_MODE_SVC | PSR_I | PSR_F)

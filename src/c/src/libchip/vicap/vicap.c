@@ -22,6 +22,7 @@
 #include <vicap_drv.h>
 #include <bsp/irq.h>
 #include <uart.h>
+#include <hi3518e.h>
 
 unsigned int fstart = 0;
 unsigned int fcc = 0;
@@ -29,6 +30,7 @@ static ring_buffer r_buf;
 static rtems_id   v_mutex;
 static  rtems_id user_task_id;
 static unsigned char led0 = 1;
+static unsigned char led1 = 0;
 
 #define INC_WRAP(pos)    ((pos+1) == BUF_NUM ? 0 : (pos+1))
 
@@ -58,6 +60,9 @@ rtems_isr video_capture_isr(rtems_vector_number vector)
 		/* modify buffer addr to next */
 		//printk("detect one frame start\n");
 		fstart++;
+
+		gpio_set(GPIO5, GPIO_PIN6, led1);
+		led1 =!led1;
 		
 		rtems_vicap_mutex_lock(&v_mutex);
 		index = r_buf.w_pos;
@@ -68,12 +73,6 @@ rtems_isr video_capture_isr(rtems_vector_number vector)
 	}else if(int_sta&CH_CC_INT){
 		//printk("one frame capture finish\n");
 		fcc++;
-
-		if((fstart==0)&&(fcc == 1)){
-			vicap_clear_ch_int(CH_CC_INT);
-			vicap_reg_newer();
-			return;
-		}
 
 		gpio_set(GPIO5, GPIO_PIN0, led0);
 		led0 =!led0;
@@ -116,7 +115,7 @@ int video_capture_open(rtems_id taskid)
 		return -1;
 	}
 
-	//hi_uart2_fns.deviceFirstOpen(0, 2, NULL);
+	//hi_uart_fns.deviceFirstOpen(0, 2, NULL);
 
 	return 0;
 }
@@ -135,7 +134,7 @@ void video_capture_init(sensor_type_e sns_type, vicap_para_s *vicap_para)
 	for(i = 0; i < BUF_NUM; i++){
 		r_buf.addr[i] = vicap_para->yaddr[i];
 	}
-
+#ifdef HI3518EV100
 	vicap_set_y_faddr(vicap_para->yaddr[0]);
 	vicap_set_y_width(vicap_para->width);
 	vicap_set_y_height(vicap_para->height-1);
@@ -151,7 +150,16 @@ void video_capture_init(sensor_type_e sns_type, vicap_para_s *vicap_para)
 	vicap_set_crop_height(vicap_para->height-1);
 	vicap_set_hact(vicap_para->width);
 	vicap_set_vact(vicap_para->height);
-
+#else defined HI3518EV200
+	vicap_set_y_faddr(vicap_para->yaddr[0]);
+	vicap_set_y_width(vicap_para->width);
+	vicap_set_y_height(vicap_para->height);
+	vicap_set_y_stride(vicap_para->width*2);
+	vicap_set_crop_width(vicap_para->width-1);
+	vicap_set_crop_height(vicap_para->height-1);
+	vicap_set_hact(vicap_para->width);
+	vicap_set_vact(vicap_para->height);
+#endif
 	status = rtems_semaphore_create(
 		rtems_build_name('S', 'P', 'M', '0'),
 		1,
@@ -219,6 +227,6 @@ void video_capture_close()
 				NULL);
 	rtems_semaphore_delete(v_mutex);
 
-	//hi_uart2_fns.deviceLastClose(0, 2, NULL);
+	//hi_uart_fns.deviceLastClose(0, 2, NULL);
 }
 

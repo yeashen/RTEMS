@@ -165,20 +165,16 @@ void vicap_clear_ch_int(unsigned int int_mask)
 #else defined HI3518EV200
 void vicap_set_y_faddr(unsigned int addr)
 {
-	vi_reg->ch_y_faddr = addr;
+	vi_reg->des_faddr = addr;
 }
 
 void vicap_set_y_width(unsigned int width)
 {
 	unsigned int val = 0;
 
-	val = vi_reg->ch_y_size;
-	val = ((val&0xFFFFFE000)|((width-1)&0x1FFF));
-	vi_reg->ch_y_size = val;
-	
-	val = vi_reg->lb_width;
-	val = ((val&0xF000F000)|((width-1)&0xFFF)|(((width-1)&0xFFF)<<16));
-	vi_reg->lb_width = val;
+	val = vi_reg->des_size;;
+	val = ((val&0xFFFFF000)|((width-1)&0xFFF));
+	vi_reg->des_size = val;
 }
 
 
@@ -186,48 +182,17 @@ void vicap_set_y_height(unsigned int height)
 {
 	unsigned int val = 0;
 
-	val = vi_reg->ch_y_size;
-	val = ((val&0xE000FFFF)|((height&0x1FFF)<<16));
-	vi_reg->ch_y_size = val;
-
-	val = vi_reg->lb_height;
-	val = ((val&0xFFFFF000)|(height&0xFFF));
-	vi_reg->lb_height = val;
+	val = vi_reg->des_size;
+	val = ((val&0xF000FFFF)|(((height-1)&0xFFF)<<16));
+	vi_reg->des_size = val;
 }
 
 
 void vicap_set_y_stride(unsigned int stride)
 {
-	vi_reg->ch_y_stride = stride;
+	vi_reg->des_stride = stride;
 }
 
-void vicap_set_c_faddr(unsigned int addr)
-{
-	vi_reg->ch_c_faddr = addr;
-}
-
-void vicap_set_c_width(unsigned int width)
-{
-	unsigned int val = 0;
-
-	val = vi_reg->ch_c_size;
-	val = (val&0xFFFFFE000)|((width-1)&0x1FFF);
-	vi_reg->ch_c_size = val;
-}
-
-void vicap_set_c_height(unsigned int height)
-{
-	unsigned int val = 0;
-
-	val = vi_reg->ch_c_size;
-	val = (val&0xE000FFFF)|((height&0x1FFF)<<16);
-	vi_reg->ch_c_size = val;
-}
-
-void vicap_set_c_stride(unsigned int stride)
-{
-	vi_reg->ch_c_stride = stride;
-}
 void vicap_set_hact(unsigned int hact)
 {
 	vi_reg->hact = hact;
@@ -245,10 +210,6 @@ void vicap_set_crop_width(unsigned int width)
 	val = vi_reg->des_crop_size;
 	val = (val&0xFFFFFE000)|(width&0x1FFF);
 	vi_reg->des_crop_size = val;
-
-	val = vi_reg->lb_crop_size;
-	val = (val&0xFFFFFE000)|(width&0x1FFF);
-	vi_reg->lb_crop_size = val;
 }
 
 
@@ -259,36 +220,16 @@ void vicap_set_crop_height(unsigned int height)
 	val = vi_reg->des_crop_size;
 	val = (val&0xE000FFFF)|((height&0x1FFF)<<16);
 	vi_reg->des_crop_size = val;
-
-	val = vi_reg->lb_crop_size;
-	val = (val&0xE000FFFF)|((height&0x1FFF)<<16);
-	vi_reg->lb_crop_size = val;
-}
-
-
-void vicap_set_pack_y_width(unsigned int width)
-{
-	
-}
-
-void vicap_set_pack_c_width(unsigned int width)
-{
-	
 }
 
 void vicap_reg_newer()
 {
-	vi_reg->lb_newer = 0x1;
-}
-
-unsigned int vicap_get_ch_int_en()
-{
-	
+	vi_reg->des_newer = 0x1;
 }
 
 unsigned int vicap_get_ch_int_status()
 {
-	return vi_reg->ch_int;
+	return vi_reg->des_int;
 }
 
 unsigned int vicap_set_pt_enable(unsigned int enable)
@@ -317,7 +258,7 @@ unsigned int vicap_get_pt_width()
 
 void vicap_clear_ch_int(unsigned int int_mask)
 {
-	vi_reg->ch_int = int_mask;
+	vi_reg->des_int = int_mask;
 }
 
 static void mipi_phy_init()
@@ -441,11 +382,12 @@ void vicap_reg_init(sensor_type_e sns_type)
 #else defined HI3518EV200
 	/* axi_bus */
 	vi_reg->axi = 0x10103030;
-	vi_reg->vi_int_en = 0x2;
+	vi_reg->vi_int_en = 0x4; //des int
 	vi_reg->pt_int_en = 0x0;
-	vi_reg->pt_offset0 = 0xFFC00000;
+	vi_reg->pt_offset0 = 0x1FF00000;
 	vi_reg->pt_offset1 = 0xFFF00010;
 	vi_reg->pt_offset2 = 0xFFF00020;
+	vi_reg->id_cfg = 0xC0000000;
 	vi_reg->timing_cfg = 0x82001;
 	vi_reg->data_cfg = 0x4;
 	vi_reg->hfb = 0x0;
@@ -455,12 +397,13 @@ void vicap_reg_init(sensor_type_e sns_type)
 	vi_reg->vbfb = 0x0;
 	vi_reg->vbact = 0x0;
 	vi_reg->vbbb = 0x0;
-	vi_reg->buf_mode = 0x0;
-	vi_reg->lb_cfg = 0x80000000;
-	vi_reg->lb_id = 0x1;
-	vi_reg->lb_crop_cfg = 0x1;
-	vi_reg->ch_y_cfg = 0x80000000;
-	vi_reg->ch_c_cfg = 0x80000000;
-	vi_reg->ch_int_en = FSTART_EN|CC_INT_EN;
+	vi_reg->des_sel = 0x0; //des->port
+	vi_reg->des_ctl = 0x80000010;	//en, 16bit
+	vi_reg->des_id = 0x1;
+	vi_reg->des_crop_cfg = 0x1;
+	vi_reg->des_crop_start = 0x0;
+	vi_reg->des_cfg = 0x0;	//compress
+	vi_reg->des_buf = 0x80;
+	vi_reg->des_int_en = FSTART_EN|CC_INT_EN;
 #endif
 }
