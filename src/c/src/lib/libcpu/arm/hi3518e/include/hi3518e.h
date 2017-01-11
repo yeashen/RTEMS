@@ -103,6 +103,9 @@
 #define GPIO9_REG_BASE			0x201D0000
 #define GPIO10_REG_BASE		0x201E0000
 #define GPIO11_REG_BASE		0x201F0000
+/* USB */
+#define USB_EHCI_REG_BASE 	0x100B0000
+#define USB_OHCI_REG_BASE 	0x100A0000
 /*************************End Base Address************************************/
 
 /*************************Reg Structure****************************************/
@@ -114,21 +117,21 @@ typedef struct{
 	 uint32_t int_stat;	/* 0x00C */
 	 uint32_t xtal_ctrl;	/* 0x010 */
 	 uint32_t pll_ctrl;		/* 0x014 */
-	 uint32_t res0[11];	/* 0x018~0x040 */
+	 uint8_t res_0x018[0x044-0x018]; /* 0x018*/
 	 uint32_t sc_lock;		/* 0x044 */
 }hi_sysctrl_regs_s;
 
 /* PinMux @0x200F0000 */
 typedef struct{
 #ifdef HI3518EV100
-	 uint32_t res0[2];		/* 0x000~0x004 */
+	 uint8_t res_0x000[0x008-0x000];	/* 0x000 */
 	 uint32_t sns_clk;		/* 0x008 */
 	 uint32_t spi0_sck;	/* 0x00C */
 	 uint32_t spi0_sdo;	/* 0x010 */
 	 uint32_t spi0_sdi;	/* 0x014 */
 	 uint32_t i2c_sda;		/* 0x018 */
 	 uint32_t i2c_scl;		/* 0x01C */
-	 uint32_t res2[42];	/* 0x020~0x0C4 */
+	 uint8_t res_0x020[0x0C8-0x020]; /* 0x020 */
 	 uint32_t gpio9_0;	/* 0x0C8 */
 	 uint32_t gpio9_1;	/* 0x0CC */
 	 uint32_t gpio9_2;	/* 0x0D0 */
@@ -137,10 +140,10 @@ typedef struct{
 	 uint32_t gpio9_5;	/* 0x0DC */
 	 uint32_t gpio9_6;	/* 0x0E0 */
 	 uint32_t gpio9_7;	/* 0x0E4 */
-	 uint32_t res3[8];		/* 0x0E8~0x104 */
+	 uint8_t res_0x0e8[0x108-0x0E8]; /* 0x0E8 */
 	 uint32_t uart2_rxd;	/* 0x108 */
 	 uint32_t uart2_txd; /* 0x10C */
-	 uint32_t res4[9];		/* 0x110~0x130 */
+	 uint8_t res_0x110[0x134-0x110]; /* 0x110 */
 	 uint32_t gpio0_5;	/* 0x134 */
 	 uint32_t gpio0_6;	/* 0x138 */
 	 uint32_t gpio0_7;	/* 0x13C */
@@ -164,7 +167,7 @@ typedef struct{
 	 uint32_t sns_rstn;	/* 0x004 */
 	 uint32_t flash_trig;	/* 0x008 */
 	 uint32_t shutter_trig;	/* 0x00C */
-	 uint32_t res0[12];	/* 0x010~0x03C */
+	 uint8_t res_0x010[0x040-0x010];	 /* 0x010 */
 	 uint32_t spi0_sck;	/* 0x040 */
 	 uint32_t spi0_sdo;	/* 0x044 */
 	 uint32_t spi0_sdi;	/* 0x048 */
@@ -187,9 +190,11 @@ typedef struct{
 	 uint32_t gpio1_4;	/* 0x08C */
 	 uint32_t gpio1_5;	/* 0x090 */
 	 uint32_t gpio1_6;	/* 0x094 */
-	 uint32_t res1[13];	/* 0x098~0x0C8 */
+	 uint8_t res_0x098[0x0CC-0x098];	/* 0x098 */
 	 uint32_t uart2_rxd;	/* 0x0CC */
 	 uint32_t uart2_txd; /* 0x0D0 */
+	 uint8_t res_0x0d4[0x0F8-0x0D4];	/* 0x0D4 */
+	 uint32_t adc_ch0;	/* 0x0F8 */
 #endif
 
 }hi_pinmux_regs_s;
@@ -222,9 +227,9 @@ typedef struct{							/*  T0/T2 - T1/T3 */
 typedef struct {
      uint32_t dr;				/* 0x00 */
 	 uint32_t rsr;			/* 0x04 */
-	 uint32_t res0[4];		/* 0x08~0x14 */
+	 uint8_t res_0x08[0x18-0x08]; /* 0x08 */
 	 uint32_t fr;				/* 0x18 */
-	 uint32_t res1[2];		/* 0x1C~0x20 */
+	 uint8_t res_0x1c[0x24-0x1C]; /* 0x1C */
 	 uint32_t ibrd;			/* 0x24 */
 	 uint32_t fbrd;			/* 0x28 */
 	 uint32_t lcr_h;			/* 0x2C */
@@ -251,19 +256,19 @@ typedef struct{
 #else defined HI3518EV200
 	 uint32_t ctrl;			/* 0x00 */
 	 uint32_t tar;			/* 0x04 */
-	 uint32_t res0[2];		/* 0x08~0x0C */
+	 uint8_t res_0x08[0x10-0x08]; /* 0x08 */
 	 uint32_t data;			/* 0x10 */
-	 uint32_t res1[2];		/* 0x14~0x18 */
+	 uint8_t res_0x14[0x1C-0x14]; /* 0x14 */
 	 uint32_t scl_h;			/* 0x1C */
 	 uint32_t scl_l;			/* 0x20 */
-	 uint32_t res2[2];		/* 0x24~0x28 */
+	 uint8_t res_0x24[0x2C-0x24]; /* 0x24 */
 	 uint32_t int_sta;		/* 0x2C */
 	 uint32_t int_mask;	/* 0x30 */
 	 uint32_t int_raw;		/* 0x34 */
 	 uint32_t rx_tl;			/* 0x38 */
 	 uint32_t tx_tl;			/* 0x3C */
 	 uint32_t int_clr;		/* 0x40 */
-	 uint32_t res3[10];	/* 0x44~0x68 */
+	 uint8_t res_0x44[0x6C-0x44]; /* 0x44 */
 	 uint32_t en;				/* 0x6C */
 	 uint32_t stat;			/* 0x70 */
 	 uint32_t txflr;			/* 0x74 */
@@ -274,7 +279,7 @@ typedef struct{
 	 uint32_t dma_cr;		/* 0x88 */
 	 uint32_t dma_tdlr;	/* 0x8C */
 	 uint32_t dma_rdlr;	/* 0x90 */
-	 uint32_t res5[3];		/* 0x94~0x9C */
+	 uint8_t res_0x94[0xA0-0x94]; /* 0x94 */
 	 uint32_t scl_switch;		/* 0xA0 */
 	 uint32_t scl_sim;			/* 0xA4 */
 	 uint32_t res6;			/* 0xA8 */
@@ -291,29 +296,29 @@ typedef struct{
 typedef struct{
 #ifdef HI3518EV100
 	 uint32_t lowpower;		/* 0x0000 */
-	 uint32_t res0[3];			/* 0x0004~0x000C */
+	 uint8_t res_0x0004[0x0010-0x0004]; /* 0x0004 */
 	 uint32_t axi;				/* 0x0010 */
-	 uint32_t res1[3];			/* 0x0014~0x001C */
+	 uint8_t res_0x0014[0x0020-0x0014]; /* 0x0014 */
 	 uint32_t pt_sel;			/* 0x0020 */
-	 uint32_t res2[3];			/* 0x0024~0x002C */
+	 uint8_t res_0x0024[0x0030-0x0024]; /* 0x0024 */
 	 uint32_t ch_sel;			/* 0x0030 */
-	 uint32_t res3[43];		/* 0x0034~0x00DC */
+	 uint8_t res_0x0034[0x00E0-0x0034]; /* 0x0034 */
 	 uint32_t apb;				/* 0x00E0 */
-	 uint32_t res4[3];			/* 0x00E4~0x00EC */
+	 uint8_t res_0x00e4[0x00F0-0x00E4]; /* 0x00E4 */
 	 uint32_t g_int;				/* 0x00F0 */
-	 uint32_t res5;				/* 0x00F4 */
+	 uint8_t res_0x00f4[0x00F8-0x00F4];	 /* 0x00F4 */
 	 uint32_t g_int_en;		/* 0x00F8 */
-	 uint32_t res6;				/* 0x00FC */
+	 uint8_t res_0x00fc[0x0100-0x00FC];	 /* 0x00FC */
 	 uint32_t pt_mode;		/* 0x0100 */
-	 uint32_t res7[3];			/* 0x0104~0x010C */
+	 uint8_t res_0x0104[0x0110-0x0104]; /* 0x0104 */
 	 uint32_t pt_offset0;	/* 0x0110 */
 	 uint32_t pt_offset1;	/* 0x0114 */
 	 uint32_t pt_offset2;	/* 0x0118 */
-	 uint32_t res8[5];			/* 0x011C~0x012C*/
+	 uint8_t res_0x011c[0x0130-0x011C]; /* 0x011C*/
 	 uint32_t timing_cfg;	/* 0x0130 */
-	 uint32_t res9[3];			/* 0x0134~0x013C */
+	 uint8_t res_0x0134[0x0140-0x0134]; /* 0x0134 */
 	 uint32_t data_cfg;		/* 0x0140 */
-	 uint32_t res10[15];		/* 0x0144~0x017C */
+	 uint8_t res_0x0144[0x0180-0x0144]; /* 0x0144 */
 	 uint32_t hfb;				/* 0x0180 */
 	 uint32_t hact;				/* 0x0184 */
 	 uint32_t hbb;				/* 0x0188 */
@@ -323,7 +328,7 @@ typedef struct{
 	 uint32_t vbfb;				/* 0x0198 */
 	 uint32_t vbact;			/* 0x019C */
 	 uint32_t vbbb;				/* 0x01A0 */
-	 uint32_t res11[15];		/* 0x01A4~0x01DC */
+	 uint8_t res_0x01A4[0x01E0-0x01A4]; /* 0x01A4 */
 	 uint32_t pt_status;		/* 0x01E0 */
 	 uint32_t res12;			/* 0x01E4 */
 	 uint32_t res13;			/* 0x01E8 */
@@ -331,18 +336,18 @@ typedef struct{
 	 uint32_t pt_int;			/* 0x01F0 */
 	 uint32_t res14;			/* 0x01F4 */
 	 uint32_t pt_int_en;		/* 0x01F8 */
-	 uint32_t res15[897];	/* 0x01FC~0x0FFC */
+	 uint8_t res_0x01fc[0x1000-0x01FC]; /* 0x01FC */
 	 uint32_t ch_ctrl;			/* 0x1000 */
 	 uint32_t ch_newer;		/* 0x1004 */
-	 uint32_t res16[2];		/* 0x1008~0x100C */
+	 uint8_t res_0x1008[0x1010-0x1008]; /* 0x1008 */
 	 uint32_t adapter;		/* 0x1010 */
-	 uint32_t res17[27];		/* 0x1014~0x107C */
+	 uint8_t res_0x1014[0x1080-0x1014]; /* 0x1014 */
 	 uint32_t pack_y;			/* 0x1080 */
 	 uint32_t pack_y_width;	/* 0x1084 */
-	 uint32_t res18[2];		/* 0x1088~0x108C */
+	 uint8_t res_0x1088[0x1090-0x1088]; /* 0x1088 */
 	 uint32_t pack_c;			/* 0x1090 */
 	 uint32_t pack_c_width;	/* 0x1094 */
-	 uint32_t res19[6];		/* 0x1098~0x10AC */
+	 uint8_t res_0x1098[0x10B0-0x1098]; /* 0x1098 */
 	 uint32_t des_y;			/* 0x10B0 */
 	 uint32_t des_y_addr;	/* 0x10B4 */
 	 uint32_t des_y_size;	/* 0x10B8 */
@@ -351,51 +356,51 @@ typedef struct{
 	 uint32_t des_c_addr;	/* 0x10C4 */
 	 uint32_t des_c_size;	/* 0x10C8 */
 	 uint32_t des_c_stride;	/* 0x10CC */
-	 uint32_t res20[8];		/* 0x10D0~0x10EC */
+	 uint8_t res_0x10d0[0x10F0-0x10D0]; /* 0x10D0 */
 	 uint32_t ch_int;			/* 0x10F0 */
 	 uint32_t res21;			/* 0x10F4 */
 	 uint32_t ch_int_en;		/* 0x10F8 */
 	 uint32_t res22;			/* 0x10FC */
 	 uint32_t crop_cfg;		/* 0x1100 */
 	 uint32_t crop_win;		/* 0x1104 */
-	 uint32_t res23[2];		/* 0x1108~0x110C */
+	 uint8_t res_0x1108[0x1110-0x1108]; /* 0x1108 */
 	 uint32_t crop_start;	/* 0x1110 */
 	 uint32_t crop_size;		/* 0x1114 */
 #else defined HI3518EV200
 	 uint32_t wk_mode;			/* 0x0000 */
-	 uint32_t res0[3];			/* 0x0004~0x000C */
+	 uint8_t res_0x0004[0x0010-0x0004]; /* 0x0004 */
 	 uint32_t axi;				/* 0x0010 */
 	 uint32_t mac;				/* 0x0014 */
-	 uint32_t res1[10];			/* 0x0018~0x003C */
+	 uint8_t res_0x0018[0x0040-0x0018]; /* 0x0018 */
 	 uint32_t des_sel;			/* 0x0040 */
-	 uint32_t res2[3];		    /* 0x0044~0x004C */
+	 uint8_t res_0x0044[0x0050-0x0044]; /* 0x0044 */
 	 uint32_t isp_sel;			/* 0x0050 */
-	 uint32_t res3[3];		    /* 0x0054~0x005C */
+	 uint8_t res_0x0054[0x0060-0x0054]; /* 0x0054 */
 	 uint32_t chn_mode;			/* 0x0060 */
-	 uint32_t res4[3];		    /* 0x0064~0x006C */
+	 uint8_t res_0x0064[0x0070-0x0064]; /* 0x0064 */
 	 uint32_t buf_mode;			/* 0x0070 */
-	 uint32_t res5[27];			/* 0x0074~0x00DC */
+	 uint8_t res_0x0074[0x00E0-0x0074]; /* 0x0074 */
 	 uint32_t apb;				/* 0x00E0 */
-	 uint32_t res6[3];		    /* 0x00E4~0x00EC */
+	 uint8_t res_0x00e4[0x00F0-0x00E4]; /* 0x00E4 */
 	 uint32_t vi_int;			/* 0x00F0 */
-	 uint32_t res7;				/* 0x00F4 */ 
+	 uint8_t res_0x00f4[0x00F8-0x00F4];	 /* 0x00F4 */ 
 	 uint32_t vi_int_en;		/* 0x00F8 */
-	 uint32_t res8;				/* 0x00FC */
+	 uint8_t res_0x00fc[0x0100-0x00FC];	 /* 0x00FC */
 	 uint32_t pt_mode;			/* 0x0100 */
-	 uint32_t res9[3];			/* 0x0104~0x010C */
+	 uint8_t res_0x0104[0x0110-0x0104]; /* 0x0104 */
 	 uint32_t pt_offset0;		/* 0x0110 */
 	 uint32_t pt_offset1;		/* 0x0114 */
 	 uint32_t pt_offset2;		/* 0x0118 */
-	 uint32_t res10;				/* 0x011C */
+	 uint8_t res_0x011c[0x0120-0x011C]; /* 0x011C */
 	 uint32_t bt656;			/* 0x0120 */
-	 uint32_t res11[3];			/* 0x0124~0x12C */
+	 uint8_t res_0x0124[0x0130-0x0124]; /* 0x0124 */
 	 uint32_t timing_cfg;		/* 0x0130 */
 	 uint32_t gen_timing_cfg;	/* 0x0134 */
-	 uint32_t res12[2];			/* 0x0138~0x13C */
+	 uint8_t res_0x0138[0x0140-0x0138]; /* 0x0138 */
 	 uint32_t data_cfg;			/* 0x0140 */
-	 uint32_t res13[3];			/* 0x0144~0x014C */
+	 uint8_t res_0x0144[0x0150-0x0144]; /* 0x0144 */
 	 uint32_t yuv444_cfg;		/* 0x0150 */
-	 uint32_t res14[11];		/* 0x0154~0x17C */
+	 uint8_t res_0x0154[0x0180-0x0154]; /* 0x0154 */
 	 uint32_t hfb;				/* 0x0180 */
 	 uint32_t hact;				/* 0x0184 */
 	 uint32_t hbb;				/* 0x0188 */
@@ -406,91 +411,91 @@ typedef struct{
 	 uint32_t vbact;			/* 0x019C */
 	 uint32_t vbbb;				/* 0x01A0 */
 	 uint32_t id_cfg;			/* 0x01A4 */
-	 uint32_t res15[14];		/* 0x01A8~0x01DC */
+	 uint8_t res_0x01A8[0x01E0-0x01A8]; /* 0x01A8 */
 	 uint32_t pt_status;		/* 0x01E0 */
 	 uint32_t bt656_statys;		/* 0x01E4 */
-	 uint32_t res16;			/* 0x01E8 */
+	 uint8_t res_0x01e8[0x01EC-0x01E8]; /* 0x01E8 */
 	 uint32_t pt_size;			/* 0x01EC */
 	 uint32_t pt_int;			/* 0x01F0 */
-	 uint32_t res17;			/* 0x01F4 */
+	 uint8_t res_0x01f4[0x01F8-0x01F4];	/* 0x01F4 */
 	 uint32_t pt_int_en;		/* 0x01F8 */
-	 uint32_t res18;			/* 0x01FC */
+	 uint8_t res_0x0fc[0x0200-0x01FC]; /* 0x01FC */
 	 uint32_t des_ctl;			/* 0x0200 */
 	 uint32_t des_newer;		/* 0x0204 */
-	 uint32_t res19[2];			/* 0x0208~0x20C */
+	 uint8_t res_0x0208[0x0210-0x0208]; /* 0x0208 */
 	 uint32_t des_id;			/* 0x0210 */
-	 uint32_t res20[3];			/* 0x0214~0x021C */
+	 uint8_t res_0x0214[0x0220-0x0214]; /* 0x0214 */
 	 uint32_t des_crop_cfg;		/* 0x0220 */
-	 uint32_t res21[3];			/* 0x0224~0x022C */
+	 uint8_t res_0x0224[0x0230-0x0224]; /* 0x0224~0x022C */
 	 uint32_t des_crop_start;	/* 0x0230 */
 	 uint32_t des_crop_size;	/* 0x0234 */
-	 uint32_t res22[14];		/* 0x0238~0x026C */
+	 uint8_t res_0x0238[0x0270-0x0238]; /* 0x0238 */
 	 uint32_t des_cfg;			/* 0x0270 */
-	 uint32_t res23[4];			/* 0x0274~0x0280 */
+	 uint8_t res_0x0274[0x0284-0x0274]; /* 0x0274 */
 	 uint32_t des_size;			/* 0x0284 */
-	 uint32_t res24[2];			/* 0x0288~0x028C */
+	 uint8_t res_0x0288[0x0290-0x0288]; /* 0x0288 */
 	 uint32_t des_faddr;		/* 0x0290 */
 	 uint32_t des_stride;		/* 0x0294 */
-	 uint32_t res25;			/* 0x0298 */
+	 uint8_t res_0x298[0x029C-0x0298]; /* 0x0298 */
 	 uint32_t des_buf;			/* 0x029C */
-	 uint32_t res26[20];		/* 0x02A0~0x02EC */
+	 uint8_t res_0x02a0[0x02F0-0x02A0]; /* 0x02A0 */
 	 uint32_t des_int;			/* 0x02F0 */
-	 uint32_t res27;			/* 0x02F4 */
+	 uint8_t res_0x02f4[0x02F8-0x02F4];	 /* 0x02F4 */
 	 uint32_t des_int_en;		/* 0x02F8 */
-	 uint32_t res28[129];		/* 0x02FC~0x04FC */
+	 uint8_t res_0x02fc[0x0500-0x02FC];	 /* 0x02FC */
 	 uint32_t lb_cfg;			/* 0x0500 */
 	 uint32_t lb_newer;			/* 0x0504 */
-	 uint32_t res29[2];			/* 0x0508~0x050C */
+	 uint8_t res_0x0508[0x0510-0x0508]; /* 0x0508 */
 	 uint32_t lb_id;			/* 0x0510 */
-	 uint32_t res30[3];			/* 0x0514~0x051C */
+	 uint8_t res_0x0514[0x0520-0x0514]; /* 0x0514 */
 	 uint32_t lb_crop_cfg;		/* 0x0520 */
-	 uint32_t res31[3];			/* 0x0524~0x052C */
+	 uint8_t res_0x0524[0x0530-0x0524]; /* 0x0524 */
 	 uint32_t lb_crop_start;	/* 0x0530 */
 	 uint32_t lb_crop_size;		/* 0x0534 */
-	 uint32_t res32[6];			/* 0x0538~0x054C */
+	 uint8_t res_0x0538[0x0550-0x0538]; /* 0x0538 */
 	 uint32_t lb_width;			/* 0x0550 */
 	 uint32_t lb_height;		/* 0x0554 */
-	 uint32_t res33[38];		/* 0x0558~0x05EC */
+	 uint8_t res_0x0558[0x05F0-0x0558]; /* 0x0558 */
 	 uint32_t lb_int;			/* 0x05F0 */
-	 uint32_t res34;			/* 0x05F4 */
+	 uint8_t re_0x05f4[0x05F8-0x05F4]; /* 0x05F4 */
 	 uint32_t lb_int_en;		/* 0x05F8 */
-	 uint32_t res35[65];		/* 0x05FC~0x06FC */
+	 uint8_t res_0x05fc[0x0700-0x05FC]; /* 0x05FC */
 	 uint32_t src_ctl;			/* 0x0700 */
 	 uint32_t src_newer;		/* 0x0704 */
-	 uint32_t res36[26];		/* 0x0708~0x76C */
+	 uint8_t res_0x0708[0x0770-0x0708]; /* 0x0708 */
 	 uint32_t src_cfg;			/* 0x0770 */
-	 uint32_t res37[4];			/* 0x0774~0x0780 */
+	 uint8_t res_0x0774[0x0784-0x0774]; /* 0x0774 */
 	 uint32_t src_size;			/* 0x0784 */
-	 uint32_t res38[2];			/* 0x0788~0x078C */
+	 uint8_t res_0x0788[0x0790-0x0788]; /* 0x0788 */
 	 uint32_t src_faddr;		/* 0x0790 */
 	 uint32_t src_stride;		/* 0x0794 */
-	 uint32_t res39;			/* 0x0798 */
+	 uint8_t res_0x0798[0x079C-0x798];	/* 0x0798 */
 	 uint32_t src_buf;			/* 0x079C */
 	 uint32_t res40[20];		/* 0x07A0~0x07EC */
 	 uint32_t src_int;			/* 0x07F0 */
-	 uint32_t res41;			/* 0x07F4 */
+	 uint8_t res_0x07f4[0x07F8-0x7F4]; /* 0x07F4 */
 	 uint32_t src_int_en;		/* 0x07F8 */
-	 uint32_t res42[514];		/* 0x07FC~0x1000 */
+	 uint8_t res_0x07fc[0x1004-0x07FC]; /* 0x07FC */
 	 uint32_t ch_newer;			/* 0x1004 */
-	 uint32_t res43[2];			/* 0x1008~0x100C */
+	 uint8_t res_0x1008[0x1010-0x1008]; /* 0x1008 */
 	 uint32_t ch_adapter;		/* 0x1010 */
-	 uint32_t res44[27];		/* 0x1014~0x107C */
+	 uint8_t res_0x1014[0x1080-0x1014]; /* 0x1014 */
 	 uint32_t ch_y_cfg;			/* 0x1080 */
 	 uint32_t ch_y_size;		/* 0x1084 */
-	 uint32_t res45[2];			/* 0x1088~0x108C */
+	 uint8_t res_0x1088[0x1090-0x1088]; /* 0x1088 */
 	 uint32_t ch_y_faddr;		/* 0x1090 */
 	 uint32_t ch_y_haddr;		/* 0x1094 */
 	 uint32_t ch_y_stride;		/* 0x1098 */
-	 uint32_t res46;			/* 0x109C */
+	 uint8_t res_0x109c[0x10A0-0x109C]; /* 0x109C */
 	 uint32_t ch_c_cfg;			/* 0x10A0 */
 	 uint32_t ch_c_size;		/* 0x10A4 */
-	 uint32_t res47[2];			/* 0x10B8~0x10BC */
+	 uint8_t res_0x10a8[0x10B0-0x10A8]; /* 0x10A8 */
 	 uint32_t ch_c_faddr;		/* 0x10B0 */
 	 uint32_t ch_c_haddr;		/* 0x10B4 */
 	 uint32_t ch_c_stride;		/* 0x10B8 */
-	 uint32_t res48[13];		/* 0x10BC~0x10EC */
+	 uint8_t res_0x10bc[0x10F0-0x10BC]; /* 0x10BC */
 	 uint32_t ch_int;			/* 0x10F0 */
-	 uint32_t res49;			/* 0x10F4 */
+	 uint8_t res_0x10f8[0x10F8-0x10F4]; /* 0x10F4 */
 	 uint32_t ch_int_en;		/* 0x10F8 */
 #endif
 }hi_vi_regs_s;
@@ -502,17 +507,17 @@ typedef struct{
 	 uint32_t data1;		/* 0x008 */
 	 uint32_t res1;			/* 0x00C */
 	 uint32_t data2;		/* 0x010 */
-	 uint32_t res2[3];		/* 0x014~0x01C */
+	 uint8_t res_0x014[0x020-0x014]; /* 0x014 */
 	 uint32_t data3;		/* 0x020 */
-	 uint32_t res3[7];		/* 0x24~0x3C */
+	 uint8_t res_0x024[0x040-0x024]; /* 0x24 */
 	 uint32_t data4;		/* 0x040 */
-	 uint32_t res4[15];	/* 0x044~0x07C */
+	 uint8_t res_0x044[0x080-0x044];	/* 0x044 */
 	 uint32_t data5;		/* 0x080 */
-	 uint32_t res5[31];	/* 0x084~0x0FC */
+	 uint8_t res_0x084[0x100-0x084];	/* 0x084 */
 	 uint32_t data6;		/* 0x100 */
-	 uint32_t res6[63];	/* 0x104~0x1FC */
+	 uint8_t res_0x104[0x200-0x104];	/* 0x104 */
 	 uint32_t data7;		/* 0x200 */
-	 uint32_t res7[127];	/* 0x204~0x3FC */
+	 uint8_t res_0x204[0x400-0x204];	/* 0x204 */
 	 uint32_t dir;				/* 0x400 */
 	 uint32_t is;				/* 0x404 */
 	 uint32_t ibe;			/* 0x408 */
