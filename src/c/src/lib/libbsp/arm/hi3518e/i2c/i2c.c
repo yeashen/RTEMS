@@ -43,7 +43,7 @@ static uint8_t i2c_init_flag = 0;
 static uint32_t g_last_dev_addr = 0;
 static uint32_t g_last_work_mode = 0;
 
-#ifdef HI3518EV200
+#if defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 static void i2c_abortprocess(int minor)
 {
 	uint32_t auto_status;
@@ -84,7 +84,7 @@ static void i2c_set_rate(int minor, uint32_t i2c_rate)
 	
 	/* unmask i2c int */
 	i2c_data[minor].regs->ctrl = val;
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 	uint32_t apb_clk, sclH, sclL;
 	/* get apb bus clk for diff plat */
 	apb_clk = CFG_CLK_BUS/4;
@@ -128,7 +128,7 @@ static int hi_i2c_wait_readend(int minor)
 
 	return 0;		
 }
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 static int i2c_wait_idle(int minor)
 {
 	uint32_t work_status, auto_status, int_raw_status;
@@ -304,7 +304,7 @@ void hi_i2c_init(int minor)
 	/* sensor clk */
 	//HI_REG_WR(CRG_REG_BASE+CRG_SENSOR_CLK, 0x1);//Sensor clock 24 MHz
 	HI_REG_WR(CRG_REG_BASE+CRG_SENSOR_CLK, 0x5);//Sensor clock 27 MHz
-#else defined HI3518EV200
+#else
 	/* set i2c pinmux */
 	pinmux_regs->spi0_sck = 0x2;
 	pinmux_regs->spi0_sdo = 0x2;
@@ -332,8 +332,11 @@ void hi_i2c_init(int minor)
 
 	/* enable hi_i2c controller */
 	i2c_data[minor].regs->en |=  HI_I2C_ENABLE;
-	
+#if defined(HI3518EV200_DEMO)	
 	HI_REG_WR(CRG_REG_BASE+CRG_PERI11, 0xB4001);//Sensor clock 27 MHz VI 99MHz
+#else defined(HI3518EV200_ASHU)
+	HI_REG_WR(CRG_REG_BASE+CRG_PERI11, 0xA4001);//Sensor clock 54 MHz VI 99MHz
+#endif
 #endif
 
 	i2c_init_flag = 1;
@@ -387,7 +390,7 @@ int hi_i2c_write(int minor, i2c_para_s *i2c_para)
 	i2c_data[minor].regs->com = I2C_STOP;
 	hi_i2c_wait_writeend(minor);
 	i2c_data[minor].regs->icr = 0x01;
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 	uint32_t temp_auto_reg; 
 
 	if(i2c_set_dev_addr_and_mode(minor, dev_addr, I2C_MODE_AUTO) < 0){
@@ -478,7 +481,7 @@ int hi_i2c_read(int minor, i2c_para_s *i2c_para)
 	ret = hi_i2c_wait_writeend(minor);
 	if(ret < 0)
 		return -1;
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 	uint32_t temp_auto_reg; 
 
 	if(i2c_set_dev_addr_and_mode(minor, dev_addr, I2C_MODE_AUTO) < 0)

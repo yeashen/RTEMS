@@ -150,7 +150,7 @@ void video_capture_init(sensor_type_e sns_type, vicap_para_s *vicap_para)
 	vicap_set_crop_height(vicap_para->height-1);
 	vicap_set_hact(vicap_para->width);
 	vicap_set_vact(vicap_para->height);
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 	vicap_set_y_faddr(vicap_para->yaddr[0]);
 	vicap_set_y_width(vicap_para->width);
 	vicap_set_y_height(vicap_para->height);

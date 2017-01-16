@@ -4,7 +4,8 @@
 #include <rtems.h>
 
 //#define HI3518EV100
-#define HI3518EV200
+//#define HI3518EV200_DEMO
+#define HI3518EV200_ASHU
 
 #define HI_REG_WR(a, v)		(*( unsigned int *)(a) = (v))
 #define HI_REG_RD(a)		(*( unsigned int *)(a))
@@ -43,7 +44,7 @@
 	busclk = foutvco/(2 * pstdiv1 * pstdiv2);\
 	busclk;\
 })
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 #define UART_PL011_CLOCK			24000000 /* Except bootrom, hi3518ev200 UART use XTAL OSC clk 24M */
 #define CRG_PERI11		0x002C
 
@@ -76,7 +77,7 @@
 /* Interrupt */
 #ifdef HI3518EV100
 #define IRQ_REG_BASE					0x10140000
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 #define IRQ_REG_BASE					0x100D0000
 #endif
 /* Timer */
@@ -162,7 +163,7 @@ typedef struct{
 	 uint32_t vi_dat2;		/* 0x170 */
 	 uint32_t vi_dat1;		/* 0x174 */
 	 uint32_t vi_dat0;		/* 0x178 */
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 	 uint32_t sns_clk;		/* 0x000 */
 	 uint32_t sns_rstn;	/* 0x004 */
 	 uint32_t flash_trig;	/* 0x008 */
@@ -253,7 +254,7 @@ typedef struct{
 	 uint32_t scl_l;			/* 0x14 */
 	 uint32_t txr;			/* 0x18 */
 	 uint32_t rxr;			/* 0x1C */
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 	 uint32_t ctrl;			/* 0x00 */
 	 uint32_t tar;			/* 0x04 */
 	 uint8_t res_0x08[0x10-0x08]; /* 0x08 */
@@ -366,7 +367,7 @@ typedef struct{
 	 uint8_t res_0x1108[0x1110-0x1108]; /* 0x1108 */
 	 uint32_t crop_start;	/* 0x1110 */
 	 uint32_t crop_size;		/* 0x1114 */
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 	 uint32_t wk_mode;			/* 0x0000 */
 	 uint8_t res_0x0004[0x0010-0x0004]; /* 0x0004 */
 	 uint32_t axi;				/* 0x0010 */

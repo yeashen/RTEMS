@@ -48,9 +48,11 @@ static void GpioInit()
 	gpio_set_derection(GPIO1, GPIO_PIN2, GPIO_OUTPUT);//irled
 	gpio_set_derection(GPIO4, GPIO_PIN3, GPIO_OUTPUT);//ready
 	gpio_set_derection(GPIO4, GPIO_PIN4, GPIO_OUTPUT);//irq
+	gpio_set_derection(GPIO7, GPIO_PIN6, GPIO_OUTPUT);
+	gpio_set(GPIO7, GPIO_PIN6, 1);	
 	gpio_set(GPIO4, GPIO_PIN3, 1);	
 	gpio_set(GPIO4, GPIO_PIN4, 1);	
-	gpio_set(GPIO1, GPIO_PIN2, 0);	
+	gpio_set(GPIO1, GPIO_PIN2, 1);	
 	gpio_set(GPIO0, GPIO_PIN5, 1);	
 	gpio_set(GPIO3, GPIO_PIN5, 0);   
 	gpio_set(GPIO5, GPIO_PIN0, 0);	//led0
@@ -114,7 +116,7 @@ rtems_task Init( rtems_task_argument argument)
 
 		status = rtems_partition_get_buffer( Partition_id[i], &buffer_addr_y[i]);
 		CHECK_RET(status, "rtems_partition_get_buffer Y");
-		//printf("y_addr: %p\n", buffer_addr_y[i]);
+		printf("y_addr: %p\n", buffer_addr_y[i]);
 	}
 	
 	Partition_name[i] =  rtems_build_name( 'P', 'T', i, ' ' );

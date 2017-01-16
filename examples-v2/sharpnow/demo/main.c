@@ -179,8 +179,12 @@ rtems_task Task_3(rtems_task_argument task_index)
 #else
 rtems_task Task_3(rtems_task_argument task_index)
 {
+	unsigned int val = 0;
+
 	for(;;){
 		//printf("%s\n", __FUNCTION__);
+		gpio_set(GPIO7, GPIO_PIN6, val);
+		val = !val;
 		(void) rtems_task_wake_after(task_index*rtems_clock_get_ticks_per_second());
 	}
 }

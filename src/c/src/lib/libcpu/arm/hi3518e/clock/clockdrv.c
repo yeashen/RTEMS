@@ -95,7 +95,7 @@ rtems_irq_connect_data clock_isr_data = {
 		timer0_reg->load = BUSCLK_TO_TIMER_RELOAD(CFG_CLK_BUS); \
 		timer0_reg->ctrl = CFG_TIMER_CONTROL;\
 		} while (0)
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 #define Clock_driver_support_initialize_hardware() \
 	do { \
 		/* set clock source busclk */ \

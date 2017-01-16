@@ -64,8 +64,16 @@ void hi_gpio_set_derection(GPIO_GROUP_NUM group, GPIO_PIN_NUM pin, GPIO_DIRECTIO
 				break;
 		}
 	}
-#else defined HI3518EV200
-
+#else (defined HI3518EV200_DEMO || defined HI3518EV200_ASHU)
+	if(group == GPIO7){
+		switch(pin){
+			case GPIO_PIN6:
+				hi_pinmux_reg->adc_ch0 = 0x1;
+				break;
+			default:
+				break;
+		}
+	}
 #endif
 	if(dir == GPIO_OUTPUT){
 		gpio_reg->dir = val|(1<<pin);

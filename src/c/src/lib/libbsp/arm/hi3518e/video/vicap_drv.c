@@ -162,7 +162,7 @@ void vicap_clear_ch_int(unsigned int int_mask)
 	vi_reg->ch_int = int_mask;
 }
 
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 void vicap_set_y_faddr(unsigned int addr)
 {
 	vi_reg->des_faddr = addr;
@@ -318,7 +318,7 @@ void vicap_pin_init(sensor_type_e sns_type)
 		pinmux_reg->spi0_sdi = 0x0;
 		pinmux_reg->gpio0_7 = 0x1;
 	}
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 	/* special pin */
 	pinmux_reg->sns_rstn = 0x1;	//GPIO0_5
 	pinmux_reg->spi0_sdi = 0x0;		//GPIO3_5
@@ -379,7 +379,7 @@ void vicap_reg_init(sensor_type_e sns_type)
 
 	/* enable channel */
 	vi_reg->ch_ctrl = CH_EN;
-#else defined HI3518EV200
+#else defined(HI3518EV200_DEMO) || defined(HI3518EV200_ASHU)
 	/* axi_bus */
 	vi_reg->axi = 0x10103030;
 	vi_reg->vi_int_en = 0x4; //des int
